@@ -4,7 +4,7 @@ published: 2026-01-21
 description: ''
 image: ''
 tags: ["Flutter", "Swift", "iOS", "バイク", "ガジェット", "雑記"]
-category: ''
+category: '雑記'
 draft: false 
 lang: 'ja'
 ---
