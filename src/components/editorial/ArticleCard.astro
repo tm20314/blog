@@ -1,33 +1,28 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { getPostUrlBySlug, getCategoryUrl } from "@utils/url-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { getCategoryUrl, getPostUrlBySlug } from "@utils/url-utils";
 
 interface Props {
 	post: CollectionEntry<"posts">;
-	index?: number;
-	variant?: "standard" | "compact";
+	variant?: "standard" | "lead";
 }
 
-const { post, index, variant = "standard" } = Astro.props;
+const { post, variant = "standard" } = Astro.props;
 const category = post.data.category || "雑記";
+const postUrl = getPostUrlBySlug(post.slug);
 ---
 
 <article class:list={["article-card", `article-card--${variant}`]}>
-	{typeof index === "number" && (
-		<span class="article-card__number" aria-hidden="true">{String(index).padStart(2, "0")}</span>
-	)}
-	<div class="article-card__body">
-		<div class="article-card__meta">
-			<a href={getCategoryUrl(category)}>{category}</a>
-			<time datetime={formatDateToYYYYMMDD(post.data.published)}>
-				{formatDateToYYYYMMDD(post.data.published)}
-			</time>
-		</div>
-		<h3><a href={getPostUrlBySlug(post.slug)}>{post.data.title}</a></h3>
-		{post.data.description && <p>{post.data.description}</p>}
-		<a class="article-card__read" href={getPostUrlBySlug(post.slug)} aria-label={`${post.data.title}を読む`}>
-			読む <span aria-hidden="true">→</span>
-		</a>
+	<div class="article-card__meta">
+		<a href={getCategoryUrl(category)}>{category}</a>
+		<time datetime={formatDateToYYYYMMDD(post.data.published)}>
+			{formatDateToYYYYMMDD(post.data.published).replaceAll("-", ".")}
+		</time>
 	</div>
+	<h3><a href={postUrl}>{post.data.title}</a></h3>
+	{post.data.description && <p>{post.data.description}</p>}
+	<a class="article-card__read" href={postUrl} aria-label={`${post.data.title}を読む`}>
+		記事を読む <span aria-hidden="true">↗</span>
+	</a>
 </article>

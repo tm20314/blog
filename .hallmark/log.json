@@ -2,6 +2,16 @@
 	{
 		"date": "2026-09-03",
 		"genre": "editorial",
+		"macrostructure": "Photographic",
+		"theme": "studied-DNA",
+		"enrichment": "E8 existing photography",
+		"navigation": "N9 Edge-aligned minimal",
+		"footer": "Ft5 Statement",
+		"brief": "A photo-led modern Japanese gadget journal that keeps reading primary and presents independently built apps in a contrasting product section."
+	},
+	{
+		"date": "2026-09-03",
+		"genre": "editorial",
 		"macrostructure": "Ecosystem Index",
 		"theme": "Newsprint",
 		"enrichment": "existing editorial photography",

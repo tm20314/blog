@@ -1,36 +1,19 @@
 ---
-import { pathsEqual, url } from "@utils/url-utils";
-
-const navItems = [
-	{ label: "ホーム", href: url("/") },
-	{ label: "記事", href: url("/#journal") },
-	{ label: "つくったもの", href: url("/#works") },
-	{ label: "アーカイブ", href: url("/archive/") },
-	{ label: "このサイトについて", href: url("/about/") },
-];
-
-const currentPath = Astro.url.pathname;
-const isCurrent = (href: string) => pathsEqual(currentPath, href);
+import { url } from "@utils/url-utils";
 ---
 
 <header class="masthead">
 	<a class="skip-link" href="#main-content">本文へ移動</a>
-	<div class="masthead__utility" aria-label="サイト情報">
-		<span>Independent publication</span>
-		<span aria-hidden="true">Vol. 01</span>
-		<a href={url("/rss.xml")}>RSS</a>
-	</div>
-	<div class="masthead__brand">
-		<a href={url("/")} aria-label="つもログ ホーム">
-			<span class="masthead__name">つもログ</span>
-			<span class="masthead__tagline">Gadgets, apps & field notes</span>
+	<div class="masthead__bar">
+		<a class="wordmark" href={url("/")} aria-label="つもログ ホーム">
+			<span class="wordmark__symbol" aria-hidden="true">つ</span>
+			<span class="wordmark__text">
+				<strong>つもログ</strong>
+				<small>Gadgets × Indie apps</small>
+			</span>
+		</a>
+		<a class="masthead__cta" href={url("/#journal")}>
+			ブログを読む <span aria-hidden="true">↘</span>
 		</a>
 	</div>
-	<nav class="masthead__nav" aria-label="メインナビゲーション">
-		{navItems.map((item) => (
-			<a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
-				{item.label}
-			</a>
-		))}
-	</nav>
 </header>

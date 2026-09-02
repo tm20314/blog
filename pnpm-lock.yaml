@@ -32,6 +32,9 @@ importers:
       '@expressive-code/plugin-line-numbers':
         specifier: ^0.41.4
         version: 0.41.4
+      '@fontsource-variable/bricolage-grotesque':
+        specifier: 5.3.0
+        version: 5.3.0
       '@fontsource-variable/ibm-plex-sans':
         specifier: 5.2.8
         version: 5.2.8
@@ -41,6 +44,9 @@ importers:
       '@fontsource-variable/newsreader':
         specifier: 5.2.8
         version: 5.2.8
+      '@fontsource-variable/noto-sans-jp':
+        specifier: 5.3.0
+        version: 5.3.0
       '@fontsource/roboto':
         specifier: ^5.2.9
         version: 5.2.9
@@ -1254,6 +1260,9 @@ packages:
   '@expressive-code/plugin-text-markers@0.41.4':
     resolution: {integrity: sha512-lGqbjtIuiY+UZ+z61kKIJAZtF7H5xoT8lkxANmeoVaat+H47O5A+rr5WLmD45ezprO/NTogxHsaMfqRCuQ4vlw==}
 
+  '@fontsource-variable/bricolage-grotesque@5.3.0':
+    resolution: {integrity: sha512-TLi9Q4hJjS2UvoTMRSS2nHu6c4R56lAw60NR9QYtVRCHn0XtsFpiEhNffZ8Glsoxu6wEEwLKBP8lb94J52PNBA==}
+
   '@fontsource-variable/ibm-plex-sans@5.2.8':
     resolution: {integrity: sha512-n5PF2iFa0CZT0QYTPzxvZ39opC9LnU0zdoRccoADbs+Dtsd+lbXOZF7RNuIPHcQX1dKjF63sxnRImQIB5eD0Ag==}
 
@@ -1262,6 +1271,9 @@ packages:
 
   '@fontsource-variable/newsreader@5.2.8':
     resolution: {integrity: sha512-Ivo7tZPqQZ/erBbjx3mc+PvI0w+TuUhy93zlvIu3dupq2AlSF328sbkAjYyhwE91v8qpiJ88ogQB684hdiPtmw==}
+
+  '@fontsource-variable/noto-sans-jp@5.3.0':
+    resolution: {integrity: sha512-XVL9GfGBRjj523v9w3Bctu4mNq7E5rUa+AMZm8DK1EM3LAGlKC3DZMvuqkLn4DB4TwwoAjcsJUCiRpUTDzzOkw==}
 
   '@fontsource/roboto@5.2.9':
     resolution: {integrity: sha512-ZTkyHiPk74B/aj8BZWbsxD5Yu+Lq+nR64eV4wirlrac2qXR7jYk2h6JlLYuOuoruTkGQWNw2fMuKNavw7/rg0w==}
@@ -6768,11 +6780,15 @@ snapshots:
     dependencies:
       '@expressive-code/core': 0.41.4
 
+  '@fontsource-variable/bricolage-grotesque@5.3.0': {}
+
   '@fontsource-variable/ibm-plex-sans@5.2.8': {}
 
   '@fontsource-variable/jetbrains-mono@5.2.8': {}
 
   '@fontsource-variable/newsreader@5.2.8': {}
+
+  '@fontsource-variable/noto-sans-jp@5.3.0': {}
 
   '@fontsource/roboto@5.2.9': {}
 

@@ -1,15 +1,16 @@
 ---
 import "../../tokens.css";
 import "../styles/editorial.css";
+import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/ibm-plex-sans";
 import "@fontsource-variable/jetbrains-mono";
-import "@fontsource-variable/newsreader";
+import "@fontsource-variable/noto-sans-jp";
 
+import bannerImage from "@assets/images/demo-banner.jpg";
 import EditorialFooter from "@components/editorial/EditorialFooter.astro";
 import SiteMasthead from "@components/editorial/SiteMasthead.astro";
-import bannerImage from "@assets/images/demo-banner.jpg";
-import { profileConfig, siteConfig } from "@/config";
 import { url } from "@utils/url-utils";
+import { profileConfig, siteConfig } from "@/config";
 
 interface Props {
 	title?: string;
@@ -57,7 +58,7 @@ const websiteSchema = {
 <html lang="ja">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{pageTitle}</title>
 		<meta name="description" content={description} />

@@ -1,11 +1,11 @@
 ---
-import type { GetStaticPaths } from "astro";
 import { Image } from "astro:assets";
-import ArticleCard from "@components/editorial/ArticleCard.astro";
 import avatarImage from "@assets/images/demo-avatar.jpg";
 import bannerImage from "@assets/images/demo-banner.jpg";
-import { projects } from "@/data/projects";
+import ArticleCard from "@components/editorial/ArticleCard.astro";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
+import type { GetStaticPaths } from "astro";
+import { projects } from "@/data/projects";
 import { PAGE_SIZE } from "../constants/constants";
 import { getSortedPosts, getTagList } from "../utils/content-utils";
 import { getPostUrlBySlug, getTagUrl, url } from "../utils/url-utils";
@@ -35,86 +35,75 @@ const homeUrl = url("/");
 	noindex={!isFirstPage}
 >
 	<main id="main-content">
-		<header class="opening-brief">
-			<p class="opening-brief__label">Gadget journal / Independent development</p>
-			<h1>使ったものと、<br />作ったものの記録。</h1>
-			<div class="opening-brief__body">
-				<p class="opening-brief__copy">
-					PCやスマホ、バイクまわりの道具を実際に試す。欲しいものがなければ、アプリを作る。
-					ここは、その過程と結果を率直に残す個人メディアです。
-				</p>
-				<a class="text-link" href="#journal">新着記事を読む <span aria-hidden="true">↓</span></a>
-			</div>
-		</header>
-
 		{isFirstPage && featuredPost && (
-			<section class="lead-layout" aria-labelledby="featured-heading">
-				<article class="lead-story">
-					<figure class="lead-story__media">
+			<>
+				<figure class="photo-hero">
+					<div class="photo-hero__media">
 						<Image
 							src={bannerImage}
 							alt="海辺に停めたバイク"
-							widths={[640, 960, 1280]}
-							sizes="(min-width: 768px) 62vw, 100vw"
+							widths={[640, 960, 1280, 1600]}
+							sizes="(min-width: 1536px) 1472px, 100vw"
 							format="avif"
 							loading="eager"
 							fetchpriority="high"
 						/>
-						<figcaption>Field note / Motorcycles and mobile tools</figcaption>
-					</figure>
-					<p class="story-kicker">Editor’s pick · 個人開発</p>
-					<h2 id="featured-heading">
-						<a href={getPostUrlBySlug(featuredPost.slug)}>{featuredPost.data.title}</a>
-					</h2>
-					<p class="lead-story__dek">
-						プログラミング未経験から、学生向けアプリを企画・開発・公開するまで。技術選定と運用で得たことをまとめました。
-					</p>
-					<a class="text-link" href={getPostUrlBySlug(featuredPost.slug)}>記事を読む <span aria-hidden="true">→</span></a>
-				</article>
+					</div>
+					<figcaption class="photo-hero__caption">
+						<span>Gadgets · Apps · Field notes</span>
+						<strong>使ったものと、作ったものの記録。</strong>
+					</figcaption>
+				</figure>
 
-				<aside class="issue-notes" aria-label="今号の案内">
-					<div class="issue-note">
-						<strong>Gadgets</strong>
-						<span>PC / Mobile</span>
+				<section class="intro-band" aria-labelledby="intro-heading">
+					<div class="intro-band__title">
+						<h1 id="intro-heading">道具を使う。<br />なければ、作る。</h1>
 					</div>
-					<div class="issue-note">
-						<strong>Build notes</strong>
-						<span>Flutter / iOS</span>
+					<div class="intro-band__copy">
+						<p>PCやスマホ、バイクまわりの道具を実際に試す。欲しいものがなければ、アプリを作る。その過程と結果を率直に残す個人メディアです。</p>
+						<a class="text-link" href="#journal">新着記事へ <span aria-hidden="true">↓</span></a>
 					</div>
-					<div class="issue-note">
-						<strong>Field notes</strong>
-						<span>Bike / Daily life</span>
+				</section>
+
+				<article class="featured-story" aria-labelledby="featured-heading">
+					<div class="featured-story__meta">
+						<span>Featured story</span>
+						<span>個人開発</span>
 					</div>
-					<a class="text-link" href={url("/archive/")}>すべての記事を見る <span aria-hidden="true">→</span></a>
-				</aside>
-			</section>
+					<div class="featured-story__body">
+						<h2 id="featured-heading"><a href={getPostUrlBySlug(featuredPost.slug)}>{featuredPost.data.title}</a></h2>
+						<p>プログラミング未経験から、学生向けアプリを企画・開発・公開するまで。技術選定と運用で得たことをまとめました。</p>
+						<a class="text-link text-link--accent" href={getPostUrlBySlug(featuredPost.slug)}>この記事を読む <span aria-hidden="true">↗</span></a>
+					</div>
+				</article>
+			</>
 		)}
 
-		<section class="section-frame" id="journal" aria-labelledby="journal-heading">
-			<header class="section-heading">
-				<span class="section-heading__index">01</span>
-				<h2 id="journal-heading">{isFirstPage ? "新着記事" : `記事一覧 · ${page.currentPage}`}</h2>
-				<p class="section-heading__aside">試したこと、直したこと、作ったもの。</p>
+		<section class:list={["journal", !isFirstPage && "journal--archive"]} id="journal" aria-labelledby="journal-heading">
+			<header class="section-heading section-heading--journal">
+				<div>
+					{isFirstPage
+						? <h2 id="journal-heading">新着記事</h2>
+						: <h1 id="journal-heading">記事一覧</h1>}
+					<p>{isFirstPage ? "試したこと、直したこと、作ったもの。" : `${page.currentPage}ページ目`}</p>
+				</div>
+				<a class="text-link" href={url("/archive/")}>すべて見る <span aria-hidden="true">→</span></a>
 			</header>
 			<div class="article-index">
 				{visiblePosts.map((post, index) => (
-					<ArticleCard post={post} index={(page.currentPage - 1) * PAGE_SIZE + index + 1} />
+					<ArticleCard post={post} variant={index === 0 ? "lead" : "standard"} />
 				))}
 			</div>
 		</section>
 
 		{isFirstPage && (
-			<section class="section-frame" aria-labelledby="topics-heading">
-				<header class="section-heading">
-					<span class="section-heading__index">02</span>
-					<h2 id="topics-heading">テーマから探す</h2>
-					<p class="section-heading__aside">興味の入口から、過去の記録へ。</p>
-				</header>
+			<section class="topic-strip" aria-labelledby="topics-heading">
+				<h2 id="topics-heading">気になるテーマから</h2>
 				<div class="topic-index">
 					{tags.map((tag) => (
 						<a href={getTagUrl(tag.name)}>
 							<span>{tag.name}</span>
-							<span class="topic-index__count">{String(tag.count).padStart(2, "0")}</span>
+							<span class="topic-index__count">{tag.count}</span>
 						</a>
 					))}
 				</div>
@@ -122,23 +111,24 @@ const homeUrl = url("/");
 		)}
 
 		{isFirstPage && (
-			<section class="section-frame" id="works" aria-labelledby="works-heading">
-				<header class="section-heading">
-					<span class="section-heading__index">03</span>
-					<h2 id="works-heading">つくったもの</h2>
-					<p class="section-heading__aside">困りごとを、自分の手でプロダクトに。</p>
+			<section class="works" id="works" aria-labelledby="works-heading">
+				<header class="works__heading">
+					<h2 id="works-heading">つくったアプリ</h2>
+					<p>困りごとを見つけ、設計し、公開後も育てる。個人で運用しているプロダクトです。</p>
 				</header>
 				<div class="projects-grid">
 					{projects.map((project) => (
 						<article class="project">
-							<p class="project__kicker">{project.kicker}</p>
+							<div class="project__meta">
+								<span>{project.kicker}</span>
+								<span class="project__status">{project.proof}</span>
+							</div>
 							<h3><a href={url(project.href)}>{project.name}</a></h3>
 							<p class="project__description">{project.description}</p>
-							<p class="project__proof">{project.proof}</p>
 							<ul class="project__stack" aria-label="使用技術・領域">
 								{project.stack.map((item) => <li>{item}</li>)}
 							</ul>
-							<a class="project__link" href={url(project.href)}>{project.linkLabel} <span aria-hidden="true">→</span></a>
+							<a class="project__link" href={url(project.href)}>{project.linkLabel} <span aria-hidden="true">↗</span></a>
 						</article>
 					))}
 				</div>
@@ -146,13 +136,13 @@ const homeUrl = url("/");
 		)}
 
 		{isFirstPage && (
-			<section class="author-strip" aria-labelledby="author-heading">
-				<Image class="author-strip__portrait" src={avatarImage} alt="TumoTumoのプロフィール画像" width={192} height={192} />
-				<div>
-					<p class="story-kicker">About the developer</p>
+			<section class="author-panel" aria-labelledby="author-heading">
+				<Image class="author-panel__portrait" src={avatarImage} alt="TumoTumoのプロフィール画像" width={320} height={320} loading="lazy" />
+				<div class="author-panel__body">
+					<p class="author-panel__role">Developer / Writer</p>
 					<h2 id="author-heading">TumoTumo</h2>
 					<p>モバイルアプリを中心に個人開発するエンジニア。PC、スマホ、バイクなど、生活と開発を少し良くする道具が好きです。</p>
-					<a class="text-link" href={url("/about/")}>プロフィールを見る <span aria-hidden="true">→</span></a>
+					<a class="text-link" href={url("/about/")}>プロフィール <span aria-hidden="true">↗</span></a>
 				</div>
 			</section>
 		)}
