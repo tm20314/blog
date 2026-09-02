@@ -1,14 +1,166 @@
 ---
-import ArchivePanel from "@components/ArchivePanel.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import MainGridLayout from "@layouts/MainGridLayout.astro";
-import { getSortedPostsList } from "../utils/content-utils";
+import EditorialLayout from "@layouts/EditorialLayout.astro";
+import {
+	getCategoryList,
+	getSortedPostsList,
+	getTagList,
+} from "@utils/content-utils";
+import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import {
+	getCategoryUrl,
+	getPostUrlBySlug,
+	getTagUrl,
+	url,
+} from "@utils/url-utils";
 
-const sortedPostsList = await getSortedPostsList();
+const sortedPosts = await getSortedPostsList();
+const tags = (await getTagList())
+	.sort((a, b) => b.count - a.count)
+	.slice(0, 10);
+const categories = await getCategoryList();
+const groups = Object.entries(
+	sortedPosts.reduce<Record<number, typeof sortedPosts>>((result, post) => {
+		const year = post.data.published.getFullYear();
+		result[year] ??= [];
+		result[year].push(post);
+		return result;
+	}, {}),
+)
+	.map(([year, posts]) => ({ year: Number(year), posts }))
+	.sort((a, b) => b.year - a.year);
+
+const categoryName = (category: string | null | undefined) =>
+	category?.trim() || i18n(I18nKey.uncategorized);
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
-</MainGridLayout>
+<EditorialLayout
+	title="記事一覧"
+	description="つもログに掲載したガジェット、個人開発、技術記事を年別・カテゴリ別に探せる記事一覧です。"
+>
+	<main id="main-content" class="content-page archive-page">
+		<header class="page-intro">
+			<div class="page-intro__title">
+				<p class="page-intro__index">Archive / {sortedPosts.length} stories</p>
+				<h1>書いたもの、<br />全部。</h1>
+			</div>
+			<p>ガジェットの使用記録、個人開発の試行錯誤、現場で覚えた技術。公開した記事を新しい順にまとめています。</p>
+		</header>
 
+		<section class="archive-filters" aria-labelledby="filter-heading">
+			<div class="archive-filters__heading">
+				<h2 id="filter-heading">絞り込む</h2>
+				<a href={url("/archive/")}>すべて表示</a>
+			</div>
+			<div class="archive-filter-group">
+				<h3>カテゴリ</h3>
+				<nav aria-label="カテゴリで絞り込む">
+					{categories.map((category) => (
+						<a href={category.url}>{category.name}<span>{category.count}</span></a>
+					))}
+				</nav>
+			</div>
+			<div class="archive-filter-group">
+				<h3>タグ</h3>
+				<nav aria-label="タグで絞り込む">
+					{tags.map((tag) => (
+						<a href={getTagUrl(tag.name)}>#{tag.name}<span>{tag.count}</span></a>
+					))}
+				</nav>
+			</div>
+		</section>
+
+		<section class="archive-index" aria-labelledby="archive-heading">
+			<header class="archive-index__heading">
+				<h2 id="archive-heading">記事</h2>
+				<p class="archive-count" data-archive-count aria-live="polite">全{sortedPosts.length}件</p>
+			</header>
+
+			<div class="archive-groups" data-archive-groups>
+				{groups.map((group) => (
+					<section class="archive-year" data-archive-year>
+						<header>
+							<h3>{group.year}</h3>
+							<p data-archive-year-count>{group.posts.length}件</p>
+						</header>
+						<ol>
+							{group.posts.map((post) => (
+								<li
+									class="archive-entry"
+									data-archive-entry
+									data-tags={JSON.stringify(post.data.tags)}
+									data-category={post.data.category?.trim() || ""}
+								>
+									<time datetime={post.data.published.toISOString()}>
+										{formatDateToYYYYMMDD(post.data.published).slice(5).replace("-", ".")}
+									</time>
+									<div class="archive-entry__story">
+										<h4><a href={getPostUrlBySlug(post.slug)}>{post.data.title}</a></h4>
+										<div class="archive-entry__meta">
+											<a href={getCategoryUrl(post.data.category)}>{categoryName(post.data.category)}</a>
+											{post.data.tags.slice(0, 3).map((tag) => <a href={getTagUrl(tag)}>#{tag}</a>)}
+										</div>
+									</div>
+								</li>
+							))}
+						</ol>
+					</section>
+				))}
+			</div>
+			<p class="archive-empty" data-archive-empty hidden>条件に合う記事はありません。</p>
+		</section>
+	</main>
+</EditorialLayout>
+
+<script>
+	function filterArchive() {
+		const params = new URLSearchParams(window.location.search);
+		const selectedTags = params.getAll("tag");
+		const selectedCategories = params.getAll("category");
+		const wantsUncategorized = params.has("uncategorized");
+		const entries = Array.from(document.querySelectorAll<HTMLElement>("[data-archive-entry]"));
+		let visibleCount = 0;
+
+		for (const entry of entries) {
+			let entryTags: string[] = [];
+			try {
+				entryTags = JSON.parse(entry.dataset.tags || "[]");
+			} catch {
+				entryTags = [];
+			}
+			const category = entry.dataset.category || "";
+			const matchesTag = selectedTags.length === 0 || selectedTags.some((tag) => entryTags.includes(tag));
+			const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+			const matchesUncategorized = !wantsUncategorized || category.length === 0;
+			const isVisible = matchesTag && matchesCategory && matchesUncategorized;
+			entry.hidden = !isVisible;
+			if (isVisible) visibleCount += 1;
+		}
+
+		for (const group of document.querySelectorAll<HTMLElement>("[data-archive-year]")) {
+			const groupCount = group.querySelectorAll("[data-archive-entry]:not([hidden])").length;
+			group.hidden = groupCount === 0;
+			const yearCount = group.querySelector<HTMLElement>("[data-archive-year-count]");
+			if (yearCount) yearCount.textContent = `${groupCount}件`;
+		}
+
+		const count = document.querySelector<HTMLElement>("[data-archive-count]");
+		if (count) {
+			const labels = [
+				...selectedCategories,
+				...selectedTags.map((tag) => `#${tag}`),
+				...(wantsUncategorized ? ["カテゴリなし"] : []),
+			];
+			count.textContent = labels.length > 0
+				? `${labels.join(" · ")} / ${visibleCount}件`
+				: `全${visibleCount}件`;
+		}
+
+		const empty = document.querySelector<HTMLElement>("[data-archive-empty]");
+		if (empty) empty.hidden = visibleCount !== 0;
+	}
+
+	filterArchive();
+	document.addEventListener("astro:page-load", filterArchive);
+</script>

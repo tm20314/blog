@@ -1,6 +1,17 @@
 [
 	{
 		"date": "2026-09-03",
+		"scope": "app",
+		"genre": "editorial",
+		"macrostructure": "Photographic + Long Document",
+		"theme": "studied-DNA (locked in design.md)",
+		"enrichment": "existing editorial photography where content supplies it",
+		"navigation": "N9 Edge-aligned minimal",
+		"footer": "Ft5 Statement",
+		"brief": "A single editorial system across the photo-led homepage, long-form article pages, archive index, and personal developer profile."
+	},
+	{
+		"date": "2026-09-03",
 		"genre": "editorial",
 		"macrostructure": "Photographic",
 		"theme": "studied-DNA",

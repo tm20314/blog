@@ -4,7 +4,7 @@
 
   --font-display:
     "Bricolage Grotesque Variable", "Noto Sans JP Variable", sans-serif;
-  --font-body: "Noto Sans JP Variable", "IBM Plex Sans Variable", sans-serif;
+  --font-body: "Noto Sans JP Variable", sans-serif;
   --font-mono: "JetBrains Mono Variable", monospace;
 
   --color-paper: oklch(0.972 0.006 112);
@@ -19,6 +19,16 @@
   --color-accent-ink: oklch(0.18 0.028 126);
   --color-focus: oklch(0.52 0.152 132);
   --color-transparent: oklch(0.19 0.014 124 / 0);
+
+  /* Compatibility aliases for Markdown and Expressive Code. */
+  --codeblock-bg: var(--color-ink);
+  --codeblock-topbar-bg: var(--color-ink-2);
+  --inline-code-bg: var(--color-paper-2);
+  --inline-code-color: var(--color-ink-2);
+  --selection-bg: var(--color-accent);
+  --codeblock-selection: var(--color-rule-dark);
+  --license-block-bg: var(--color-paper-2);
+  --primary: var(--color-accent);
 
   --space-0: 0;
   --space-3xs: 0.125rem;
@@ -46,10 +56,14 @@
   --leading-display: 1.02;
   --leading-title: 1.2;
   --leading-body: 1.7;
+  --leading-reading: 1.85;
+  --leading-code: 1.5rem;
 
   --page-gutter: clamp(1rem, 4vw, 4rem);
   --content-max: 96rem;
   --text-measure: 65ch;
+  --document-wide: 76rem;
+  --aside-width: 18rem;
   --control-min: 2.75rem;
   --hero-min: 28rem;
   --hero-max: 48rem;

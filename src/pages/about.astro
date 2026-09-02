@@ -1,10 +1,11 @@
 ---
-
+import { Image } from "astro:assets";
 import { getEntry, render } from "astro:content";
+import avatarImage from "@assets/images/demo-avatar.jpg";
 import Markdown from "@components/misc/Markdown.astro";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
+import EditorialLayout from "@layouts/EditorialLayout.astro";
+import { url } from "@utils/url-utils";
+import { profileConfig } from "@/config";
 
 const aboutPost = await getEntry("spec", "about");
 
@@ -14,12 +15,71 @@ if (!aboutPost) {
 
 const { Content } = await render(aboutPost);
 ---
-<MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
-    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
-            <Markdown class="mt-2">
-                <Content />
-            </Markdown>
-        </div>
-    </div>
-</MainGridLayout>
+
+<EditorialLayout
+	title="プロフィール"
+	description="つもログを書き、モバイルアプリを個人開発しているTumoTumoのプロフィールです。"
+>
+	<main id="main-content" class="content-page about-page">
+		<header class="page-intro page-intro--about">
+			<div class="page-intro__title">
+				<p class="page-intro__index">About / Developer & Writer</p>
+				<h1>道具が好きで、<br />アプリも作る。</h1>
+			</div>
+			<p>使って気づいたことと、作って学んだことを、自分の言葉で残しています。</p>
+		</header>
+
+		<section class="profile-sheet" aria-labelledby="profile-heading">
+			<div class="profile-sheet__portrait">
+				<Image
+					src={avatarImage}
+					alt="TumoTumoのプロフィール画像"
+					width={720}
+					height={720}
+					loading="eager"
+				/>
+			</div>
+			<div class="profile-sheet__body">
+				<p class="profile-sheet__role">Independent developer / Japan</p>
+				<h2 id="profile-heading">{profileConfig.name}</h2>
+				<p class="profile-sheet__lead">モバイルアプリを中心に個人開発するエンジニア。PC、スマホ、バイクなど、生活と開発を少し良くする道具が好きです。</p>
+				<Markdown class="about-original">
+					<Content />
+				</Markdown>
+				<nav class="profile-sheet__links" aria-label="TumoTumoの外部リンク">
+					{profileConfig.links.map((link) => (
+						<a href={link.url} target="_blank" rel="me noopener">{link.name} ↗</a>
+					))}
+				</nav>
+			</div>
+		</section>
+
+		<section class="about-principles" aria-labelledby="principles-heading">
+			<header>
+				<h2 id="principles-heading">このサイトで<br />残したいこと。</h2>
+			</header>
+			<div class="about-principles__list">
+				<article>
+					<span>01</span>
+					<h3>実際に使った感想</h3>
+					<p>スペック表だけでは分からない、日々の使い心地や気になった点を率直に書きます。</p>
+				</article>
+				<article>
+					<span>02</span>
+					<h3>個人開発の過程</h3>
+					<p>完成品だけでなく、設計や技術選定、失敗から学んだことまで記録します。</p>
+				</article>
+				<article>
+					<span>03</span>
+					<h3>次に役立つ情報</h3>
+					<p>同じ道具や技術を選ぶ人が、判断材料として使える記事を目指します。</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="about-cta" aria-labelledby="about-cta-heading">
+			<h2 id="about-cta-heading">まずは、最近の記事から。</h2>
+			<a href={url("/#journal")}>ブログを読む <span aria-hidden="true">↘</span></a>
+		</section>
+	</main>
+</EditorialLayout>

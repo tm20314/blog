@@ -24,7 +24,7 @@ export function pluginCustomCopyButton() {
 						tagName: "button",
 						properties: {
 							className: ["copy-btn"],
-							"aria-label": "Copy code",
+							"aria-label": "コードをコピー",
 						},
 						children: [
 							{
@@ -41,6 +41,8 @@ export function pluginCustomCopyButton() {
 											viewBox: "0 -960 960 960",
 											xmlns: "http://www.w3.org/2000/svg",
 											className: ["copy-btn-icon", "copy-icon"],
+											"aria-hidden": "true",
+											focusable: "false",
 										},
 										children: [
 											{
@@ -60,6 +62,8 @@ export function pluginCustomCopyButton() {
 											viewBox: "0 -960 960 960",
 											xmlns: "http://www.w3.org/2000/svg",
 											className: ["copy-btn-icon", "success-icon"],
+											"aria-hidden": "true",
+											focusable: "false",
 										},
 										children: [
 											{
