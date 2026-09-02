@@ -24,10 +24,14 @@ import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 
+const isCloudflarePages = process.env.CF_PAGES === "1";
+
 // https://astro.build/config
 export default defineConfig({
-	site: "https://tm20314.github.io",
-	base: "/blog",
+	site: isCloudflarePages
+		? "https://tm20314-blog.pages.dev"
+		: "https://tm20314.github.io",
+	base: isCloudflarePages ? "/" : "/blog",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
