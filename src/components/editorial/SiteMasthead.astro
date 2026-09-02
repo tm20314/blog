@@ -1,0 +1,36 @@
+---
+import { pathsEqual, url } from "@utils/url-utils";
+
+const navItems = [
+	{ label: "ホーム", href: url("/") },
+	{ label: "記事", href: url("/#journal") },
+	{ label: "つくったもの", href: url("/#works") },
+	{ label: "アーカイブ", href: url("/archive/") },
+	{ label: "このサイトについて", href: url("/about/") },
+];
+
+const currentPath = Astro.url.pathname;
+const isCurrent = (href: string) => pathsEqual(currentPath, href);
+---
+
+<header class="masthead">
+	<a class="skip-link" href="#main-content">本文へ移動</a>
+	<div class="masthead__utility" aria-label="サイト情報">
+		<span>Independent publication</span>
+		<span aria-hidden="true">Vol. 01</span>
+		<a href={url("/rss.xml")}>RSS</a>
+	</div>
+	<div class="masthead__brand">
+		<a href={url("/")} aria-label="つもログ ホーム">
+			<span class="masthead__name">つもログ</span>
+			<span class="masthead__tagline">Gadgets, apps & field notes</span>
+		</a>
+	</div>
+	<nav class="masthead__nav" aria-label="メインナビゲーション">
+		{navItems.map((item) => (
+			<a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+				{item.label}
+			</a>
+		))}
+	</nav>
+</header>

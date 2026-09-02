@@ -1,0 +1,91 @@
+---
+import "../../tokens.css";
+import "../styles/editorial.css";
+import "@fontsource-variable/ibm-plex-sans";
+import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/newsreader";
+
+import EditorialFooter from "@components/editorial/EditorialFooter.astro";
+import SiteMasthead from "@components/editorial/SiteMasthead.astro";
+import bannerImage from "@assets/images/demo-banner.jpg";
+import { profileConfig, siteConfig } from "@/config";
+import { url } from "@utils/url-utils";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	noindex?: boolean;
+}
+
+const {
+	title,
+	description = "PC・スマホ・バイク周辺のガジェットと、個人開発したアプリの記録を届けるブログ。",
+	image,
+	noindex = false,
+} = Astro.props;
+
+const pageTitle = title
+	? `${title} | ${siteConfig.title}`
+	: `${siteConfig.title} — ガジェットと個人開発の記録`;
+const siteOrigin = Astro.site ?? Astro.url.origin;
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
+const ogImageUrl = new URL(image || bannerImage.src, siteOrigin);
+const websiteSchema = {
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": "WebSite",
+			"@id": `${siteOrigin}#website`,
+			name: siteConfig.title,
+			url: new URL(url("/"), siteOrigin).toString(),
+			description,
+			inLanguage: "ja-JP",
+		},
+		{
+			"@type": "Person",
+			"@id": `${siteOrigin}#author`,
+			name: profileConfig.name,
+			url: new URL(url("/about/"), siteOrigin).toString(),
+			sameAs: profileConfig.links.map((link) => link.url),
+		},
+	],
+};
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<meta name="author" content={profileConfig.name} />
+		<link rel="canonical" href={canonicalUrl} />
+		<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS`} href={url("/rss.xml")} />
+		<link rel="icon" href={url("/favicon/favicon-light-32.png")} sizes="32x32" />
+		{noindex && <meta name="robots" content="noindex, follow" />}
+
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="ja_JP" />
+		<meta property="og:site_name" content={siteConfig.title} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageUrl} />
+		<script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+		<slot name="head" />
+	</head>
+	<body>
+		<div class="site-shell">
+			<SiteMasthead />
+			<slot />
+			<EditorialFooter />
+		</div>
+	</body>
+</html>

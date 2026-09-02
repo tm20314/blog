@@ -1,0 +1,19 @@
+{
+  "scannedAt": "2026-09-03",
+  "sourceMtimes": {
+    "package.json": 1768921753,
+    "tailwind.config.cjs": 1765497068
+  },
+  "findings": {
+    "framework": "Astro 5 with Svelte 5 and Tailwind CSS 3",
+    "fonts": "Roboto for UI and JetBrains Mono Variable for code",
+    "palette": "Existing OKLCH variables driven by a configurable hue",
+    "motion": "No dedicated motion library; CSS transitions only",
+    "spacing": "Tailwind defaults without a named 4px design-token scale"
+  },
+  "preserve": [
+    "Astro content collection and Markdown posts",
+    "JetBrains Mono for code",
+    "Cloudflare Pages and GitHub Pages deployment compatibility"
+  ]
+}

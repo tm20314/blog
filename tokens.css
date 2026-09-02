@@ -1,0 +1,64 @@
+/* Hallmark · genre: editorial · macrostructure: Ecosystem Index · theme: Newsprint · enrichment: existing editorial photography · nav: N6 · footer: Ft1 · contrast: pass (40–41) · slop: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57) */
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+:root {
+	color-scheme: light;
+
+	--font-display:
+		"Newsreader Variable", "Yu Mincho", "Hiragino Mincho ProN", serif;
+	--font-body:
+		"IBM Plex Sans Variable", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+		sans-serif;
+	--font-mono: "JetBrains Mono Variable", "SFMono-Regular", Consolas, monospace;
+
+	--color-paper: oklch(0.965 0.014 88);
+	--color-paper-deep: oklch(0.925 0.022 84);
+	--color-ink: oklch(0.245 0.018 60);
+	--color-ink-soft: oklch(0.43 0.024 62);
+	--color-rule: oklch(0.73 0.03 78);
+	--color-rule-strong: oklch(0.47 0.026 65);
+	--color-accent: oklch(0.49 0.135 36);
+	--color-accent-strong: oklch(0.38 0.11 34);
+	--color-accent-ink: oklch(0.965 0.014 88);
+	--color-focus: oklch(0.57 0.14 230);
+	--color-transparent: oklch(0 0 0 / 0);
+
+	--space-0: 0;
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.25rem;
+	--space-6: 1.5rem;
+	--space-8: 2rem;
+	--space-10: 2.5rem;
+	--space-12: 3rem;
+	--space-14: 3.5rem;
+	--space-16: 4rem;
+	--space-20: 5rem;
+	--space-24: 6rem;
+
+	--text-xs: 0.75rem;
+	--text-sm: 0.875rem;
+	--text-base: 1rem;
+	--text-md: 1.125rem;
+	--text-lg: 1.375rem;
+	--text-xl: 1.75rem;
+	--text-2xl: 2.25rem;
+	--text-3xl: clamp(2.75rem, 8vw, 6.5rem);
+	--text-display: clamp(2.25rem, 5.5vw, 5.25rem);
+
+	--leading-tight: 1.05;
+	--leading-title: 1.16;
+	--leading-body: 1.75;
+	--tracking-tight: -0.035em;
+	--tracking-wide: 0.12em;
+	--tracking-wider: 0.18em;
+
+	--content-max: 80rem;
+	--text-measure: 60ch;
+	--border-hairline: 1px;
+	--border-strong: 2px;
+	--underline-offset: 2px;
+	--focus-width: 3px;
+	--radius-none: 0;
+}
