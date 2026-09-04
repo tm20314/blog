@@ -20,6 +20,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
+import { rehypeSmartEmbeds } from "./src/plugins/rehype-smart-embeds.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
@@ -172,6 +173,7 @@ export default defineConfig({
 					},
 				},
 			],
+			rehypeSmartEmbeds,
 		],
 	},
 	vite: {

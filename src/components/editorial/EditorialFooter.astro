@@ -1,6 +1,10 @@
 ---
 import { url } from "@utils/url-utils";
 import { profileConfig } from "@/config";
+
+const amazonAssociateTag =
+	import.meta.env.PUBLIC_AMAZON_ASSOCIATE_TAG?.trim() ?? "";
+const hasAmazonAssociateTag = /^[A-Za-z0-9_-]+-\d{2}$/.test(amazonAssociateTag);
 ---
 
 <footer class="editorial-footer">
@@ -15,6 +19,11 @@ import { profileConfig } from "@/config";
 				<a href={link.url} rel="me noopener" target="_blank">{link.name}</a>
 			))}
 		</nav>
+		{hasAmazonAssociateTag && (
+			<p class="editorial-footer__disclosure">
+				Amazonのアソシエイトとして、つもログは適格販売により収入を得ています。
+			</p>
+		)}
 		<p class="editorial-footer__legal">© {new Date().getFullYear()} TumoTumo · Built independently in Japan.</p>
 	</div>
 </footer>

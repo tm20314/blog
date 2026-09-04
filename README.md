@@ -72,6 +72,24 @@ In addition to Astro's default support for [GitHub Flavored Markdown](https://gi
 - GitHub repository cards ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
 - Enhanced code blocks with Expressive Code ([Preview](https://fuwari.vercel.app/posts/expressive-code/) / [Docs](https://expressive-code.com/))
 
+### URL cards and social embeds
+
+Paste a URL on its own line to convert it automatically at build time. Inline links and linked images are left unchanged.
+
+- Amazon product URLs become product cards.
+- YouTube and Vimeo URLs become responsive video players.
+- X, Instagram, and TikTok post URLs become lazy-loaded embeds.
+- Other URLs become external-link cards.
+- Use `[表示したいタイトル](https://example.com/)` on its own line to set a card title manually.
+
+To add an Amazon Associate tag, set `PUBLIC_AMAZON_ASSOCIATE_TAG` in `.env` and in the Cloudflare Pages build environment. For example:
+
+```dotenv
+PUBLIC_AMAZON_ASSOCIATE_TAG=your-tracking-id-22
+```
+
+Do not include a tag that is not registered to you. When the variable is configured, Amazon cards receive the tag, `rel="sponsored"`, an advertising label, and the required site disclosure in the footer. Existing `amzn.to` and `amzn.asia` short URLs are not rewritten.
+
 ## ⚡ Commands
 
 All commands are run from the root of the project, from a terminal:
