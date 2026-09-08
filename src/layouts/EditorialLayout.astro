@@ -17,6 +17,8 @@ interface Props {
 	description?: string;
 	image?: string;
 	noindex?: boolean;
+	robots?: string;
+	analytics?: boolean;
 	lang?: string;
 	ogType?: "website" | "article";
 	publishedTime?: Date;
@@ -29,6 +31,8 @@ const {
 	description = "PC・スマホ・バイク周辺のガジェットと、個人開発したアプリの記録を届けるブログ。",
 	image,
 	noindex = false,
+	robots,
+	analytics = true,
 	lang = siteConfig.lang,
 	ogType = "website",
 	publishedTime,
@@ -42,6 +46,7 @@ const pageTitle = title
 const siteOrigin = Astro.site ?? Astro.url.origin;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
 const ogImageUrl = new URL(image || bannerImage.src, siteOrigin);
+const robotsContent = robots ?? (noindex ? "noindex, follow" : "");
 const websiteSchema = {
 	"@context": "https://schema.org",
 	"@graph": [
@@ -79,7 +84,7 @@ const websiteSchema = {
 		<link rel="icon" href={url("/favicon/favicon-32.png")} type="image/png" sizes="32x32" />
 		<link rel="icon" href={url("/favicon/favicon-192.png")} type="image/png" sizes="192x192" />
 		<link rel="apple-touch-icon" href={url("/favicon/apple-touch-icon.png")} sizes="180x180" />
-		{noindex && <meta name="robots" content="noindex, follow" />}
+		{robotsContent && <meta name="robots" content={robotsContent} />}
 
 		<meta property="og:type" content={ogType} />
 		<meta property="og:locale" content="ja_JP" />
@@ -102,7 +107,7 @@ const websiteSchema = {
 			<meta property="article:tag" content={tag} />
 		))}
 		<script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
-		<GoogleServices />
+		{analytics && <GoogleServices />}
 		<slot name="head" />
 	</head>
 	<body>

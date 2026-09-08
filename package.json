@@ -15,6 +15,7 @@
 		"test:related": "node --import tsx --test tests/related-posts.test.ts",
 		"test:domain": "node --test tests/domain-redirect.test.mjs",
 		"test:microcms": "node --import tsx --test tests/microcms-normalize.test.ts",
+		"test:preview": "node --test tests/microcms-preview-function.test.mjs",
 		"new-post": "node scripts/new-post.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",

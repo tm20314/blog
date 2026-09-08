@@ -45,3 +45,13 @@ Cloudflare PagesでDeploy Hookを作り、そのURLをmicroCMSのWebhookに登�
 4. 公開するとWebhook経由でCloudflare Pagesが再ビルドされます。
 
 既存Markdownと同じslugを入力した場合は、記事データを守るためMarkdown版が優先されます。ブログテンプレート付属のサンプルはslugが空なのでサイトには表示されません。
+
+## 5. 公開前にプレビューする
+
+`ブログ` APIの「画面プレビュー」には次のURLを登録します。
+
+```text
+https://tumolog.com/preview/#contentId={CONTENT_ID}&draftKey={DRAFT_KEY}
+```
+
+記事編集画面の「画面プレビュー」を押すと、公開前の本文・アイキャッチ・カテゴリ・タグ・装飾ブロックを本番サイトと同じデザインで確認できます。下書きキーはURLのハッシュからすぐ消去し、ブラウザには保存しません。プレビュー取得はサーバー側で行い、APIキーをブラウザへ公開しない構成です。プレビューページは検索対象・アクセス解析・広告配信から除外しています。
