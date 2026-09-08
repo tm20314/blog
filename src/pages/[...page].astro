@@ -114,21 +114,58 @@ const homeUrl = url("/");
 			<section class="works" id="works" aria-labelledby="works-heading">
 				<header class="works__heading">
 					<h2 id="works-heading">つくったアプリ</h2>
-					<p>困りごとを見つけ、設計し、公開後も育てる。個人で運用しているプロダクトです。</p>
+					<p>使う人には、できることを。つくる人には、考えたことを。身近な困りごとから生まれ、公開後も育てている5つのプロダクトです。</p>
+					<dl class="works__summary" aria-label="作品一覧の概要">
+						<div>
+							<dt>Released</dt>
+							<dd>5 apps</dd>
+						</div>
+						<div>
+							<dt>Platforms</dt>
+							<dd>iOS / Android</dd>
+						</div>
+					</dl>
 				</header>
 				<div class="projects-grid">
-					{projects.map((project) => (
+					{projects.map((project, index) => (
 						<article class="project">
-							<div class="project__meta">
-								<span>{project.kicker}</span>
-								<span class="project__status">{project.proof}</span>
+							<figure class="project__visual">
+								<Image
+									class="project__screen"
+									src={project.screen}
+									alt={project.screenAlt}
+									widths={[360, 520, 720]}
+									sizes="(min-width: 60rem) 34vw, 100vw"
+									format="avif"
+									loading="lazy"
+								/>
+								<figcaption>
+									<Image class="project__icon" src={project.icon} alt={project.iconAlt} width={64} height={64} format="webp" loading="lazy" />
+									<span>{String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span>
+								</figcaption>
+							</figure>
+							<div class="project__body">
+								<div class="project__meta">
+									<span>{project.kicker}</span>
+									<span class="project__status">{project.proof}</span>
+								</div>
+								<h3>{project.name}</h3>
+								<p class="project__tagline">{project.tagline}</p>
+								<p class="project__description">{project.description}</p>
+								<ul class="project__stack" aria-label="使用技術・領域">
+									{project.stack.map((item) => <li>{item}</li>)}
+								</ul>
+								<div class="project__actions" aria-label={`${project.name}の入手先`}>
+									{project.links.map((link) => (
+										<a class="project__store" href={link.href} target="_blank" rel="noopener noreferrer">
+											<span>{link.label}</span><span aria-hidden="true">↗</span>
+										</a>
+									))}
+								</div>
+								{project.story && (
+									<a class="project__link" href={url(project.story.href)}>{project.story.label} <span aria-hidden="true">→</span></a>
+								)}
 							</div>
-							<h3><a href={url(project.href)}>{project.name}</a></h3>
-							<p class="project__description">{project.description}</p>
-							<ul class="project__stack" aria-label="使用技術・領域">
-								{project.stack.map((item) => <li>{item}</li>)}
-							</ul>
-							<a class="project__link" href={url(project.href)}>{project.linkLabel} <span aria-hidden="true">↗</span></a>
 						</article>
 					))}
 				</div>

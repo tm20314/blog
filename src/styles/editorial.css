@@ -1,13 +1,13 @@
-/* Hallmark · genre: editorial · macrostructure: Photographic + Long Document · design-system: design.md · H6 knobs: image=full-bleed, caption=lower-left, text=below
+/* Hallmark · genre: editorial + playful · macrostructure: Photographic + Workbench + Long Document · design-system: design.md · H6 knobs: image=full-bleed, caption=lower-left, text=below
  * theme: studied-DNA (source: https://tobalog.com/) · studied: yes · DNA-source: url
  * sources: https://tobalog.com/ · https://www.gizmodo.jp/ · https://gori.me/ · https://gadgetmitchy.com/
  * observed: paper=oklch(0.955 0 0) · body=DNP Shuei Gothic Gin/Yu Gothic · applied: paper=oklch(0.972 0.006 112) · accent=oklch(0.89 0.228 126)
  * type: Bricolage Grotesque Variable + Noto Sans JP Variable · enrichment: E8 existing photography · nav: N9 Edge-aligned minimal · footer: Ft5 Statement
- * audience: gadget readers and indie developers · use: read the blog · tone: technical editorial · motion: none
- * contrast: pass (40–41) · slop: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
+ * audience: app users, hiring teams, and indie developers · use: read the blog and evaluate released apps · tone: technical editorial + playful workbench · motion: none
+ * contrast: pass (40–41) · slop: pass (1–58) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
  * icons: pass (30) · mobile: pass (34, 49, 50–57)
  */
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
 
 *,
 *::before,
@@ -494,6 +494,7 @@ a {
   color: var(--color-accent);
 }
 
+/* Hallmark · works substructure: Workbench · tone: playful editorial · enrichment: real product captures */
 .works {
   display: grid;
   gap: var(--space-2xl);
@@ -519,19 +520,92 @@ a {
   font-size: var(--text-md);
 }
 
+.works__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-0);
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule-dark);
+}
+
+.works__summary div {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.works__summary dt {
+  color: var(--color-paper-3);
+  font-size: var(--text-xs);
+}
+
+.works__summary dd {
+  margin: var(--space-0);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 800;
+  line-height: var(--leading-title);
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2xl);
+  gap: var(--space-3xl);
 }
 
 .project {
   display: grid;
-  align-content: start;
-  gap: var(--space-lg);
+  grid-template-columns: minmax(0, 1fr);
   min-width: var(--space-0);
-  padding-block-start: var(--space-md);
-  border-block-start: var(--rule-hair) solid var(--color-rule-dark);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.project__visual {
+  position: relative;
+  display: grid;
+  min-width: var(--space-0);
+  min-height: 28rem;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-paper-2);
+}
+
+.project__screen {
+  width: 100%;
+  height: min(36rem, 128vw);
+  object-fit: contain;
+}
+
+.project__visual figcaption {
+  position: absolute;
+  inset-block-end: var(--space-md);
+  inset-inline: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.project__icon {
+  width: var(--control-min);
+  height: var(--control-min);
+  border-radius: var(--radius-sm);
+}
+
+.project__body {
+  display: grid;
+  align-content: center;
+  min-width: var(--space-0);
+  gap: var(--space-lg);
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
 }
 
 .project__meta {
@@ -540,11 +614,14 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xs) var(--space-md);
-  color: var(--color-paper-3);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
 }
 
 .project__status {
-  color: var(--color-accent);
+  color: var(--color-ink-2);
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 
 .project h3 {
@@ -552,9 +629,17 @@ a {
   line-height: var(--leading-display);
 }
 
+.project__tagline {
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  line-height: var(--leading-title);
+}
+
 .project__description {
   max-width: 48ch;
-  color: var(--color-paper-3);
+  color: var(--color-ink-2);
 }
 
 .project__stack {
@@ -568,14 +653,47 @@ a {
 
 .project__stack li {
   padding: var(--space-2xs) var(--space-xs);
-  border: var(--rule-hair) solid var(--color-rule-dark);
+  border: var(--rule-hair) solid var(--color-rule);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
 
-.project__link {
-  width: fit-content;
+.project__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.project__store {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: var(--control-min);
+  padding-inline: var(--space-md);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.project__store:hover {
   color: var(--color-accent);
+}
+
+.project__link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: var(--control-min);
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .author-panel {
@@ -723,6 +841,10 @@ a {
     align-items: start;
   }
 
+  .project__body {
+    padding: var(--space-2xl);
+  }
+
   .author-panel {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   }
@@ -817,6 +939,28 @@ a {
     gap: var(--space-3xl);
   }
 
+  .project {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .project:nth-child(even) .project__visual {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .project:nth-child(even) .project__body {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .project__visual {
+    min-height: 36rem;
+  }
+
+  .project__screen {
+    height: 36rem;
+  }
+
   .author-panel__portrait {
     max-height: 42rem;
   }
@@ -844,6 +988,7 @@ a {
   .article-card__meta a,
   .article-card__read,
   .project__link,
+  .project__store,
   .topic-index a,
   .editorial-footer__links a {
     min-height: var(--control-min);

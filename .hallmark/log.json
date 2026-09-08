@@ -1,5 +1,16 @@
 [
 	{
+		"date": "2026-09-09",
+		"scope": "section",
+		"genre": "editorial + playful",
+		"macrostructure": "Photographic + Workbench section",
+		"theme": "studied-DNA (locked in design.md)",
+		"enrichment": "real product captures and app icons from the supplied Figma work and official store listings",
+		"navigation": "N9 Edge-aligned minimal (unchanged)",
+		"footer": "Ft5 Statement (unchanged)",
+		"brief": "A playful app showcase for both product users and hiring or client audiences, with verified App Store and Google Play destinations."
+	},
+	{
 		"date": "2026-09-03",
 		"scope": "app",
 		"genre": "editorial",

@@ -1,7 +1,7 @@
 {
-	"scannedAt": "2026-09-03",
+	"scannedAt": "2026-09-09",
 	"sourceMtimes": {
-		"package.json": 1788365758,
+		"package.json": 1788518512,
 		"tailwind.config.cjs": 1765497068
 	},
 	"findings": {
@@ -12,6 +12,7 @@
 		"spacing": "Named 4px-based design-token scale in tokens.css"
 	},
 	"preserve": [
+		"Locked editorial system in design.md and tokens.css",
 		"Astro content collection and Markdown posts",
 		"Existing post and project URLs",
 		"Cloudflare Pages and GitHub Pages deployment compatibility"
