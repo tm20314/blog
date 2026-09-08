@@ -31,7 +31,7 @@ const coverImage = post.data.image?.trim() || "/images/default-thumbnail.png";
 	</div>
 	<h3><a href={postUrl}>{post.data.title}</a></h3>
 	{post.data.description && <p>{post.data.description}</p>}
-	<a class="article-card__read" href={postUrl} aria-label={`${post.data.title}を読む`}>
+	<span class="article-card__read" aria-hidden="true">
 		記事を読む <span aria-hidden="true">↗</span>
-	</a>
+	</span>
 </article>

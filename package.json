@@ -11,6 +11,7 @@
 		"astro": "astro",
 		"type-check": "tsc --noEmit --isolatedDeclarations",
 		"test:embeds": "node --test tests/rehype-smart-embeds.test.mjs",
+		"test:blocks": "node --test tests/rehype-editorial-blocks.test.mjs",
 		"new-post": "node scripts/new-post.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",

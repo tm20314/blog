@@ -1,6 +1,17 @@
 [
 	{
 		"date": "2026-09-09",
+		"scope": "components",
+		"genre": "editorial",
+		"macrostructure": "Long Document components (unchanged)",
+		"theme": "studied-DNA (locked in design.md)",
+		"enrichment": "six restrained editorial blocks using the existing paper, ink, and lime system",
+		"navigation": "N9 Edge-aligned minimal (unchanged)",
+		"footer": "Ft5 Statement (unchanged)",
+		"brief": "Expand the whole article card tap target and recreate STORK19-style authoring primitives without copying its visual identity."
+	},
+	{
+		"date": "2026-09-09",
 		"scope": "section",
 		"genre": "editorial + playful",
 		"macrostructure": "Photographic + Workbench section",

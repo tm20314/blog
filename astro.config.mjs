@@ -19,6 +19,15 @@ import { expressiveCodeConfig } from "./src/config.ts";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
+import {
+	EditorialAccordionComponent,
+	EditorialBoxComponent,
+	EditorialButtonComponent,
+	EditorialFaqComponent,
+	EditorialSpeechComponent,
+	EditorialStepComponent,
+	EditorialStepsComponent,
+} from "./src/plugins/rehype-component-editorial-blocks.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { rehypeSmartEmbeds } from "./src/plugins/rehype-smart-embeds.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
@@ -147,6 +156,13 @@ export default defineConfig({
 						important: (x, y) => AdmonitionComponent(x, y, "important"),
 						caution: (x, y) => AdmonitionComponent(x, y, "caution"),
 						warning: (x, y) => AdmonitionComponent(x, y, "warning"),
+						box: EditorialBoxComponent,
+						button: EditorialButtonComponent,
+						speech: EditorialSpeechComponent,
+						faq: EditorialFaqComponent,
+						accordion: EditorialAccordionComponent,
+						steps: EditorialStepsComponent,
+						step: EditorialStepComponent,
 					},
 				},
 			],
