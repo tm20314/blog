@@ -46,7 +46,7 @@ function rehypeShiftDocumentHeadings() {
 // https://astro.build/config
 export default defineConfig({
 	site: isCloudflarePages
-		? "https://tm20314-blog.pages.dev"
+		? "https://tumolog.com"
 		: "https://tm20314.github.io",
 	base: isCloudflarePages ? "/" : "/blog",
 	trailingSlash: "always",
