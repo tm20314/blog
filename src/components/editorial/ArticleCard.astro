@@ -1,7 +1,9 @@
 ---
+import path from "node:path";
 import type { CollectionEntry } from "astro:content";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
-import { getCategoryUrl, getPostUrlBySlug } from "@utils/url-utils";
+import { getCategoryUrl, getDir, getPostUrlBySlug } from "@utils/url-utils";
 
 interface Props {
 	post: CollectionEntry<"posts">;
@@ -11,9 +13,16 @@ interface Props {
 const { post, variant = "standard" } = Astro.props;
 const category = post.data.category || "雑記";
 const postUrl = getPostUrlBySlug(post.slug);
+const coverImage = post.data.image?.trim() || "/images/default-thumbnail.png";
 ---
 
 <article class:list={["article-card", `article-card--${variant}`]}>
+	<ImageWrapper
+		src={coverImage}
+		basePath={path.join("content/posts/", getDir(post.id))}
+		class="article-card__media"
+		alt=""
+	/>
 	<div class="article-card__meta">
 		<a href={getCategoryUrl(category)}>{category}</a>
 		<time datetime={formatDateToYYYYMMDD(post.data.published)}>

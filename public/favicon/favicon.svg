@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="つもログ">
+  <rect width="64" height="64" fill="#181a17" />
+  <text
+    x="32"
+    y="35"
+    fill="#baff00"
+    font-family="'Noto Sans JP', 'Hiragino Sans', sans-serif"
+    font-size="42"
+    font-weight="900"
+    text-anchor="middle"
+    dominant-baseline="middle"
+  >つ</text>
+</svg>

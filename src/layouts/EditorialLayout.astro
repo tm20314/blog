@@ -7,6 +7,7 @@ import "@fontsource-variable/noto-sans-jp";
 
 import bannerImage from "@assets/images/demo-banner.jpg";
 import EditorialFooter from "@components/editorial/EditorialFooter.astro";
+import GoogleServices from "@components/integrations/GoogleServices.astro";
 import SiteMasthead from "@components/editorial/SiteMasthead.astro";
 import { url } from "@utils/url-utils";
 import { profileConfig, siteConfig } from "@/config";
@@ -74,7 +75,10 @@ const websiteSchema = {
 		<meta name="author" content={profileConfig.name} />
 		<link rel="canonical" href={canonicalUrl} />
 		<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS`} href={url("/rss.xml")} />
-		<link rel="icon" href={url("/favicon/favicon-light-32.png")} sizes="32x32" />
+		<link rel="icon" href={url("/favicon/favicon.svg")} type="image/svg+xml" />
+		<link rel="icon" href={url("/favicon/favicon-32.png")} type="image/png" sizes="32x32" />
+		<link rel="icon" href={url("/favicon/favicon-192.png")} type="image/png" sizes="192x192" />
+		<link rel="apple-touch-icon" href={url("/favicon/apple-touch-icon.png")} sizes="180x180" />
 		{noindex && <meta name="robots" content="noindex, follow" />}
 
 		<meta property="og:type" content={ogType} />
@@ -98,6 +102,7 @@ const websiteSchema = {
 			<meta property="article:tag" content={tag} />
 		))}
 		<script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+		<GoogleServices />
 		<slot name="head" />
 	</head>
 	<body>

@@ -14,6 +14,7 @@ const hasAmazonAssociateTag = /^[A-Za-z0-9_-]+-\d{2}$/.test(amazonAssociateTag);
 		<nav class="editorial-footer__links" aria-label="フッターナビゲーション">
 			<a href={url("/archive/")}>記事一覧</a>
 			<a href={url("/about/")}>プロフィール</a>
+			<a href={url("/privacy/")}>プライバシー</a>
 			<a href={url("/rss.xml")}>RSS</a>
 			{profileConfig.links.map((link) => (
 				<a href={link.url} rel="me noopener" target="_blank">{link.name}</a>

@@ -1,0 +1,58 @@
+---
+import EditorialLayout from "@layouts/EditorialLayout.astro";
+import { url } from "@utils/url-utils";
+---
+
+<EditorialLayout
+	title="プライバシーポリシー"
+	description="つもログにおけるアクセス解析、広告配信、Cookieおよび個人情報の取り扱いについて。"
+>
+	<main id="main-content" class="content-page policy-page">
+		<header class="page-intro">
+			<div class="page-intro__title">
+				<span class="page-intro__index">POLICY / 01</span>
+				<h1>プライバシー<br />ポリシー</h1>
+			</div>
+			<p>つもログにおける、アクセス解析・広告配信・個人情報の取り扱いを定めます。</p>
+		</header>
+
+		<article class="policy-document editorial-prose" data-pagefind-body>
+			<h2>アクセス解析について</h2>
+			<p>
+				当サイトでは、利用状況を把握し内容を改善するため、Google Analyticsを利用する場合があります。Google AnalyticsはCookieなどを使用し、閲覧したページ、利用端末、ブラウザ、概算の地域などの情報を収集します。これらの情報には、当サイトが氏名やメールアドレスなどを付加しません。
+			</p>
+			<p>
+				Googleによるデータの取り扱いは、<a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Googleのポリシーと規約</a>をご確認ください。計測を無効にしたい場合は、<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google Analytics オプトアウト アドオン</a>も利用できます。
+			</p>
+
+			<h2>広告配信について</h2>
+			<p>
+				当サイトでは、第三者配信の広告サービスであるGoogle AdSenseを利用する場合があります。Googleなどの第三者配信事業者は、当サイトや他のサイトへの過去のアクセス情報に基づいて広告を配信するため、Cookieやウェブビーコン、IPアドレスなどを使用することがあります。
+			</p>
+			<p>
+				パーソナライズ広告は、<a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">Googleの広告設定</a>から無効にできます。地域により同意が必要な場合は、Googleの認定した同意管理機能を通じて選択肢を表示します。
+			</p>
+
+			<h2>アフィリエイトについて</h2>
+			<p>
+				当サイトは、商品やサービスを紹介するアフィリエイトプログラムを利用する場合があります。リンク経由で商品が購入された場合、当サイトが紹介料を受け取ることがあります。紹介料の有無が購入価格に影響することはありません。
+			</p>
+
+			<h2>外部サイトと埋め込みコンテンツ</h2>
+			<p>
+				記事には、SNS投稿、動画、地図など外部サービスのコンテンツを埋め込むことがあります。埋め込み先のサービスが、閲覧者のデータを収集する場合があります。各サービスの取り扱いについては、それぞれのプライバシーポリシーをご確認ください。
+			</p>
+
+			<h2>免責事項</h2>
+			<p>
+				掲載内容は、公開時点で確認した情報や個人の体験に基づきます。当サイトの情報を利用したことによって生じた損害について、運営者は法令上認められる範囲で責任を負いません。価格、仕様、提供状況などは、必ず公式情報もご確認ください。
+			</p>
+
+			<h2>お問い合わせと改定</h2>
+			<p>
+				本ポリシーに関するお問い合わせは、<a href={url("/about/")}>プロフィールページ</a>に掲載している連絡先からお願いします。法令や利用サービスの変更に応じて、本ポリシーを予告なく改定することがあります。
+			</p>
+			<p class="policy-document__updated">制定日：2026年9月9日</p>
+		</article>
+	</main>
+</EditorialLayout>

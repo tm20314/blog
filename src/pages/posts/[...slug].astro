@@ -30,6 +30,13 @@ const { Content, headings, remarkPluginFrontmatter } = await entry.render();
 const language = entry.data.lang || siteConfig.lang;
 const description = entry.data.description || entry.data.title;
 const category = entry.data.category?.trim() || i18n(I18nKey.uncategorized);
+const coverImage = entry.data.image?.trim() || "/images/default-thumbnail.png";
+const socialImage =
+	coverImage.startsWith("/") || coverImage.startsWith("http")
+		? coverImage.startsWith("/")
+			? url(coverImage)
+			: coverImage
+		: url("/images/default-thumbnail.png");
 const canonicalUrl = new URL(
 	getPostUrlBySlug(entry.slug),
 	Astro.site ?? Astro.url.origin,
@@ -59,6 +66,7 @@ const jsonLd = {
 		name: profileConfig.name,
 	},
 	datePublished: entry.data.published.toISOString(),
+	image: new URL(socialImage, Astro.site ?? Astro.url.origin).toString(),
 	...(entry.data.updated
 		? { dateModified: entry.data.updated.toISOString() }
 		: {}),
@@ -74,6 +82,7 @@ const jsonLd = {
 	publishedTime={entry.data.published}
 	modifiedTime={entry.data.updated}
 	tags={entry.data.tags}
+	image={socialImage}
 >
 	<script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -108,15 +117,13 @@ const jsonLd = {
 				)}
 			</header>
 
-			{entry.data.image && (
-				<ImageWrapper
-					id="post-cover"
-					src={entry.data.image}
-					basePath={path.join("content/posts/", getDir(entry.id))}
-					class="article-cover"
-					alt=""
-				/>
-			)}
+			<ImageWrapper
+				id="post-cover"
+				src={coverImage}
+				basePath={path.join("content/posts/", getDir(entry.id))}
+				class="article-cover"
+				alt=""
+			/>
 
 			<div class="article-layout">
 				<div class="article-reading">

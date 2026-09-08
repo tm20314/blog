@@ -1,0 +1,59 @@
+---
+const rawGaMeasurementId =
+	import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() ?? "";
+const rawAdsenseClientId =
+	import.meta.env.PUBLIC_ADSENSE_CLIENT_ID?.trim() ?? "";
+
+const gaMeasurementId = /^G-[A-Z0-9]+$/i.test(rawGaMeasurementId)
+	? rawGaMeasurementId.toUpperCase()
+	: "";
+const adsenseClientId = /^ca-pub-\d+$/.test(rawAdsenseClientId)
+	? rawAdsenseClientId
+	: "";
+const hasGoogleServices = Boolean(gaMeasurementId || adsenseClientId);
+---
+
+{adsenseClientId && (
+	<meta name="google-adsense-account" content={adsenseClientId} />
+)}
+
+{hasGoogleServices && (
+	<script is:inline>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			window.dataLayer.push(arguments);
+		}
+
+		gtag("consent", "default", {
+			ad_storage: "denied",
+			ad_user_data: "denied",
+			ad_personalization: "denied",
+			analytics_storage: "denied",
+			wait_for_update: 500,
+		});
+		gtag("set", "ads_data_redaction", true);
+	</script>
+)}
+
+{gaMeasurementId && (
+	<>
+		<script
+			is:inline
+			async
+			src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`}
+		></script>
+		<script is:inline define:vars={{ gaMeasurementId }}>
+			gtag("js", new Date());
+			gtag("config", gaMeasurementId);
+		</script>
+	</>
+)}
+
+{adsenseClientId && (
+	<script
+		is:inline
+		async
+		src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseClientId)}`}
+		crossorigin="anonymous"
+	></script>
+)}
