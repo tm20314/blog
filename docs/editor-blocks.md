@@ -99,6 +99,20 @@
 ::product{name="製品名" image="/images/product.webp" alt="製品名" summary="実際に使って良かった65W充電器。" amazon="https://www.amazon.co.jp/..." rakuten="https://..." official="https://..."}
 ```
 
+## microCMSで追加したSTORK19系ブロック
+
+microCMSの「装飾ブロック」では、上記に加えて次のブロックを選べます。
+
+| フィールドID | 表示 | 主な入力欄 |
+| --- | --- | --- |
+| `linkCard` | 内部・外部ブログカード | URL、タイトル、説明、画像 |
+| `embed` | SNS・動画埋め込み | URL、キャプション |
+| `imagePanel` | 装飾画像 | 画像、代替テキスト、キャプション、スタイル |
+| `columns` | レスポンシブ2カラム | 左右のタイトル・本文 |
+| `tabs` | タブ切り替え | 最大3組のタブ名・本文 |
+
+埋め込みはYouTube、X、Instagram、TikTok、Vimeoに対応します。画像スタイルは `plain`、`rounded`、`shadow`、`browser` から選択できます。2カラムはスマートフォンでは自動的に縦並びになります。
+
 ## 既存の便利機能
 
 - URLを1行だけ貼る: 通常リンク、Amazon商品リンクをカード化
@@ -129,6 +143,11 @@ Markdown用の記法とmicroCMS用の入力欄は別ですが、最終的には�
 | `prosCons` | 長所・短所 | `title`, `pros`, `cons` |
 | `comparison` | 比較表 | `caption`, `headers`, `rows` |
 | `product` | 商品・広告リンク | `name`, `summary`, `image`, `disclosure`, `links` |
+| `linkCard` | ブログカード | `url`, `title`, `description`, `image` |
+| `embed` | SNS・動画 | `url`, `caption` |
+| `imagePanel` | 装飾画像 | `image`, `alt`, `caption`, `style` |
+| `columns` | 2カラム | `leftTitle`, `leftBody`, `rightTitle`, `rightBody` |
+| `tabs` | タブ | `label1`〜`label3`, `body1`〜`body3` |
 
 `src/components/editorial/StructuredArticleBody.astro` がこのデータを安全に表示し、FAQがある記事ではFAQ構造化データも出力します。`src/lib/microcms.ts` はサーバー側から記事を取得する準備です。既存Markdown記事は残したまま、新しい記事だけmicroCMSから取得できます。
 

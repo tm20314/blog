@@ -30,6 +30,30 @@ test("microCMSの記事と編集用ブロックを表示形式へ変換する", 
 				amazonUrl: "https://www.amazon.co.jp/example",
 				officialUrl: "https://example.com",
 			},
+			{
+				fieldId: "linkCard",
+				url: "https://example.com/article",
+				title: "参考記事",
+			},
+			{
+				fieldId: "imagePanel",
+				image: { url: "https://images.example.com/sample.jpg" },
+				style: "browser",
+			},
+			{
+				fieldId: "columns",
+				leftTitle: "メリット",
+				leftBody: "<p>軽い</p>",
+				rightTitle: "注意点",
+				rightBody: "<p>価格</p>",
+			},
+			{
+				fieldId: "tabs",
+				label1: "iPhone",
+				body1: "<p>iOS版</p>",
+				label2: "Android",
+				body2: "<p>Android版</p>",
+			},
 		],
 	});
 
@@ -62,6 +86,34 @@ test("microCMSの記事と編集用ブロックを表示形式へ変換する", 
 				url: "https://example.com",
 				type: "official",
 			},
+		],
+	});
+	assert.deepEqual(article.blocks[4], {
+		fieldId: "linkCard",
+		url: "https://example.com/article",
+		title: "参考記事",
+		description: undefined,
+		image: undefined,
+	});
+	assert.deepEqual(article.blocks[5], {
+		fieldId: "imagePanel",
+		image: { url: "https://images.example.com/sample.jpg" },
+		alt: undefined,
+		caption: undefined,
+		style: "browser",
+	});
+	assert.deepEqual(article.blocks[6], {
+		fieldId: "columns",
+		leftTitle: "メリット",
+		leftBody: "<p>軽い</p>",
+		rightTitle: "注意点",
+		rightBody: "<p>価格</p>",
+	});
+	assert.deepEqual(article.blocks[7], {
+		fieldId: "tabs",
+		tabs: [
+			{ label: "iPhone", body: "<p>iOS版</p>" },
+			{ label: "Android", body: "<p>Android版</p>" },
 		],
 	});
 });

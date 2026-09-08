@@ -1,4 +1,5 @@
 ---
+import { getSafeEmbed } from "@utils/embed-utils";
 import sanitizeHtml from "sanitize-html";
 import type { EditorialBlock } from "@/types/editorial-blocks";
 
@@ -42,6 +43,13 @@ const safeUrl = (value: string) =>
 	/^(?:https?:\/\/|mailto:|\/|#)/u.test(value.trim()) ? value.trim() : "#";
 const safeMediaUrl = (value: string) =>
 	/^(?:https?:\/\/|\/)/u.test(value.trim()) ? value.trim() : "";
+const getHostname = (value: string) => {
+	try {
+		return new URL(value).hostname.replace(/^www\./u, "");
+	} catch {
+		return "リンク先";
+	}
+};
 const faqItems = blocks.filter(
 	(block): block is Extract<EditorialBlock, { fieldId: "faq" }> =>
 		block.fieldId === "faq",
@@ -67,7 +75,7 @@ const faqSchema = faqItems.length
 )}
 
 <div class="custom-md editorial-prose structured-article" data-pagefind-body>
-	{blocks.map((block) => (
+	{blocks.map((block, blockIndex) => (
 		<>
 			{block.fieldId === "richText" && (
 				<div class="structured-article__rich-text" set:html={cleanHtml(block.body)} />
@@ -185,6 +193,130 @@ const faqSchema = faqItems.length
 					</div>
 				</aside>
 			)}
+
+			{block.fieldId === "linkCard" && safeUrl(block.url) !== "#" && (
+				<aside class="editor-block smart-link-card">
+					<a class="no-styling smart-link-card__link" href={safeUrl(block.url)} target="_blank" rel="noopener noreferrer">
+						{block.image && safeMediaUrl(block.image.url) ? (
+							<span class="smart-link-card__thumbnail" aria-hidden="true">
+								<img src={safeMediaUrl(block.image.url)} alt="" loading="lazy" decoding="async" />
+							</span>
+						) : (
+							<span class="smart-link-card__mark" aria-hidden="true">{getHostname(block.url).charAt(0)}</span>
+						)}
+						<span class="smart-link-card__body">
+							<span class="smart-link-card__eyebrow">BLOG CARD</span>
+							<strong class="smart-link-card__title">{block.title || getHostname(block.url)}</strong>
+							<span class="smart-link-card__meta">{block.description || getHostname(block.url)}</span>
+						</span>
+						<span class="smart-link-card__action">開く ↗</span>
+					</a>
+				</aside>
+			)}
+
+			{block.fieldId === "embed" && getSafeEmbed(block.url) && (
+				<figure class:list={["editor-block", "media-embed", `media-embed--${getSafeEmbed(block.url)?.kind}`, `media-embed--${getSafeEmbed(block.url)?.provider}`, getSafeEmbed(block.url)?.provider === "tiktok" && "media-embed--portrait"]}>
+					<div class="media-embed__header">
+						<strong class="media-embed__provider">{getSafeEmbed(block.url)?.label}</strong>
+						<a class="media-embed__source" href={safeUrl(block.url)} target="_blank" rel="noopener noreferrer">元の投稿を開く ↗</a>
+					</div>
+					<div class="media-embed__viewport">
+						<iframe
+							class="media-embed__frame"
+							src={getSafeEmbed(block.url)?.src}
+							title={getSafeEmbed(block.url)?.title}
+							loading="lazy"
+							allow={getSafeEmbed(block.url)?.allow}
+							allowfullscreen={getSafeEmbed(block.url)?.allowFullScreen}
+							referrerpolicy="strict-origin-when-cross-origin"
+						></iframe>
+					</div>
+					{block.caption && <figcaption>{block.caption}</figcaption>}
+				</figure>
+			)}
+
+			{block.fieldId === "imagePanel" && block.image && safeMediaUrl(block.image.url) && (
+				<figure class:list={["editor-block", "editor-image-panel", `editor-image-panel--${block.style}`]}>
+					{block.style === "browser" && (
+						<div class="editor-image-panel__chrome" aria-hidden="true"><span></span><span></span><span></span></div>
+					)}
+					<img src={safeMediaUrl(block.image.url)} alt={block.alt ?? ""} loading="lazy" decoding="async" />
+					{block.caption && <figcaption>{block.caption}</figcaption>}
+				</figure>
+			)}
+
+			{block.fieldId === "columns" && (
+				<div class="editor-block editor-columns">
+					<section class="editor-columns__column">
+						{block.leftTitle && <h3>{block.leftTitle}</h3>}
+						<div set:html={cleanHtml(block.leftBody)} />
+					</section>
+					<section class="editor-columns__column">
+						{block.rightTitle && <h3>{block.rightTitle}</h3>}
+						<div set:html={cleanHtml(block.rightBody)} />
+					</section>
+				</div>
+			)}
+
+			{block.fieldId === "tabs" && block.tabs.length > 0 && (
+				<section class="editor-block editor-tabs" data-editor-tabs>
+					<div class="editor-tabs__list" role="tablist" aria-label="記事内タブ">
+						{block.tabs.map((tab, tabIndex) => (
+							<button
+								type="button"
+								id={`editor-tab-${blockIndex}-${tabIndex}`}
+								role="tab"
+								aria-selected={tabIndex === 0 ? "true" : "false"}
+								aria-controls={`editor-panel-${blockIndex}-${tabIndex}`}
+								tabindex={tabIndex === 0 ? 0 : -1}
+							>{tab.label}</button>
+						))}
+					</div>
+					{block.tabs.map((tab, tabIndex) => (
+						<div
+							class="editor-tabs__panel"
+							id={`editor-panel-${blockIndex}-${tabIndex}`}
+							role="tabpanel"
+							aria-labelledby={`editor-tab-${blockIndex}-${tabIndex}`}
+							hidden={tabIndex !== 0}
+							set:html={cleanHtml(tab.body)}
+						/>
+					))}
+				</section>
+			)}
 		</>
 	))}
 </div>
+
+<script>
+	const activateTab = (button: HTMLButtonElement) => {
+		const tabs = button.closest<HTMLElement>("[data-editor-tabs]");
+		if (!tabs) return;
+		for (const candidate of tabs.querySelectorAll<HTMLButtonElement>("[role='tab']")) {
+			const active = candidate === button;
+			candidate.setAttribute("aria-selected", String(active));
+			candidate.tabIndex = active ? 0 : -1;
+			const panel = tabs.querySelector<HTMLElement>(`#${candidate.getAttribute("aria-controls")}`);
+			if (panel) panel.hidden = !active;
+		}
+	};
+
+	document.addEventListener("click", (event) => {
+		const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-editor-tabs] [role='tab']");
+		if (button) activateTab(button);
+	});
+
+	document.addEventListener("keydown", (event) => {
+		const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-editor-tabs] [role='tab']");
+		if (!button || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+		const buttons = [...(button.closest("[data-editor-tabs]")?.querySelectorAll<HTMLButtonElement>("[role='tab']") ?? [])];
+		if (!buttons.length) return;
+		event.preventDefault();
+		const index = buttons.indexOf(button);
+		const next = event.key === "Home" ? buttons[0] : event.key === "End" ? buttons.at(-1) : buttons[(index + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length];
+		if (next) {
+			activateTab(next);
+			next.focus();
+		}
+	});
+</script>

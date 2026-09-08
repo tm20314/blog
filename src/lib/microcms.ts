@@ -205,6 +205,48 @@ function normalizeBlock(block: Record<string, unknown>): EditorialBlock | null {
 				links,
 			};
 		}
+		case "linkCard":
+			return {
+				fieldId,
+				url: asString(block.url),
+				title: asString(block.title) || undefined,
+				description: asString(block.description) || undefined,
+				image: asImage(block.image),
+			};
+		case "embed":
+			return {
+				fieldId,
+				url: asString(block.url),
+				caption: asString(block.caption) || undefined,
+			};
+		case "imagePanel": {
+			const style = asString(block.style);
+			return {
+				fieldId,
+				image: asImage(block.image),
+				alt: asString(block.alt) || undefined,
+				caption: asString(block.caption) || undefined,
+				style: ["rounded", "shadow", "browser"].includes(style)
+					? (style as "rounded" | "shadow" | "browser")
+					: "plain",
+			};
+		}
+		case "columns":
+			return {
+				fieldId,
+				leftTitle: asString(block.leftTitle) || undefined,
+				leftBody: asString(block.leftBody),
+				rightTitle: asString(block.rightTitle) || undefined,
+				rightBody: asString(block.rightBody),
+			};
+		case "tabs": {
+			const tabs = [1, 2, 3].flatMap((index) => {
+				const label = asString(block[`label${index}`]);
+				const body = asString(block[`body${index}`]);
+				return label && body ? [{ label, body }] : [];
+			});
+			return { fieldId, tabs };
+		}
 		default:
 			return null;
 	}

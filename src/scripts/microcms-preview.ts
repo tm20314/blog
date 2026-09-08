@@ -1,3 +1,4 @@
+import { getSafeEmbed } from "@utils/embed-utils";
 import type { MicroCMSArticle } from "@/types/editorial-blocks";
 
 type RawBlock = Record<string, unknown>;
@@ -354,7 +355,170 @@ function renderBlock(block: RawBlock) {
 		node.append(body);
 		return node;
 	}
+	if (fieldId === "linkCard") {
+		const href = safeUrl(block.url);
+		if (!href) return null;
+		const node = make("aside", "editor-block smart-link-card");
+		const link = make("a", "no-styling smart-link-card__link");
+		link.href = href;
+		link.target = "_blank";
+		link.rel = "noopener noreferrer";
+		const imageUrl = safeUrl(asRecord(block.image).url, true);
+		let hostname = "リンク先";
+		try {
+			hostname = new URL(href, window.location.origin).hostname.replace(
+				/^www\./u,
+				"",
+			);
+		} catch {
+			// The URL was already validated; keep the readable fallback for relative URLs.
+		}
+		if (imageUrl) {
+			const thumbnail = make("span", "smart-link-card__thumbnail");
+			const image = make("img");
+			image.src = imageUrl;
+			image.alt = "";
+			image.loading = "lazy";
+			thumbnail.append(image);
+			link.append(thumbnail);
+		} else
+			link.append(make("span", "smart-link-card__mark", hostname.charAt(0)));
+		const body = make("span", "smart-link-card__body");
+		body.append(
+			make("span", "smart-link-card__eyebrow", "BLOG CARD"),
+			make("strong", "smart-link-card__title", asText(block.title) || hostname),
+			make(
+				"span",
+				"smart-link-card__meta",
+				asText(block.description) || hostname,
+			),
+		);
+		link.append(body, make("span", "smart-link-card__action", "開く ↗"));
+		node.append(link);
+		return node;
+	}
+	if (fieldId === "embed") {
+		const embed = getSafeEmbed(asText(block.url));
+		if (!embed) return null;
+		const node = make(
+			"figure",
+			`editor-block media-embed media-embed--${embed.kind} media-embed--${embed.provider}${embed.provider === "tiktok" ? " media-embed--portrait" : ""}`,
+		);
+		const header = make("div", "media-embed__header");
+		header.append(make("strong", "media-embed__provider", embed.label));
+		const source = make("a", "media-embed__source", "元の投稿を開く ↗");
+		source.href = safeUrl(block.url);
+		source.target = "_blank";
+		source.rel = "noopener noreferrer";
+		header.append(source);
+		const viewport = make("div", "media-embed__viewport");
+		const frame = make("iframe", "media-embed__frame");
+		frame.src = embed.src;
+		frame.title = embed.title;
+		frame.loading = "lazy";
+		frame.referrerPolicy = "strict-origin-when-cross-origin";
+		if (embed.allow) frame.allow = embed.allow;
+		frame.allowFullscreen = Boolean(embed.allowFullScreen);
+		viewport.append(frame);
+		node.append(header, viewport);
+		if (asText(block.caption))
+			node.append(make("figcaption", "", asText(block.caption)));
+		return node;
+	}
+	if (fieldId === "imagePanel") {
+		const imageUrl = safeUrl(asRecord(block.image).url, true);
+		if (!imageUrl) return null;
+		const style = ["rounded", "shadow", "browser"].includes(asText(block.style))
+			? asText(block.style)
+			: "plain";
+		const node = make(
+			"figure",
+			`editor-block editor-image-panel editor-image-panel--${style}`,
+		);
+		if (style === "browser") {
+			const chrome = make("div", "editor-image-panel__chrome");
+			chrome.setAttribute("aria-hidden", "true");
+			chrome.append(make("span"), make("span"), make("span"));
+			node.append(chrome);
+		}
+		const image = make("img");
+		image.src = imageUrl;
+		image.alt = asText(block.alt);
+		image.loading = "lazy";
+		node.append(image);
+		if (asText(block.caption))
+			node.append(make("figcaption", "", asText(block.caption)));
+		return node;
+	}
+	if (fieldId === "columns") {
+		const node = make("div", "editor-block editor-columns");
+		for (const side of ["left", "right"] as const) {
+			const column = make("section", "editor-columns__column");
+			const title = asText(block[`${side}Title`]);
+			if (title) column.append(make("h3", "", title));
+			appendRich(column, block[`${side}Body`]);
+			node.append(column);
+		}
+		return node;
+	}
+	if (fieldId === "tabs") {
+		const tabs = [1, 2, 3].flatMap((index) => {
+			const label = asText(block[`label${index}`]);
+			const body = asText(block[`body${index}`]);
+			return label && body ? [{ label, body }] : [];
+		});
+		if (!tabs.length) return null;
+		const node = make("section", "editor-block editor-tabs");
+		node.dataset.editorTabs = "";
+		const list = make("div", "editor-tabs__list");
+		list.setAttribute("role", "tablist");
+		list.setAttribute("aria-label", "記事内タブ");
+		const panels: HTMLElement[] = [];
+		tabs.forEach((tab, index) => {
+			const id = `preview-tab-${crypto.randomUUID()}-${index}`;
+			const panelId = `${id}-panel`;
+			const button = make("button", "", tab.label);
+			button.type = "button";
+			button.id = id;
+			button.setAttribute("role", "tab");
+			button.setAttribute("aria-selected", String(index === 0));
+			button.setAttribute("aria-controls", panelId);
+			button.tabIndex = index === 0 ? 0 : -1;
+			list.append(button);
+			const panel = make("div", "editor-tabs__panel");
+			panel.id = panelId;
+			panel.setAttribute("role", "tabpanel");
+			panel.setAttribute("aria-labelledby", id);
+			panel.hidden = index !== 0;
+			panel.innerHTML = sanitizeRichText(tab.body);
+			panels.push(panel);
+		});
+		node.append(list, ...panels);
+		return node;
+	}
 	return null;
+}
+
+function wirePreviewTabs(root: HTMLElement) {
+	root.addEventListener("click", (event) => {
+		const button = (event.target as Element | null)?.closest<HTMLButtonElement>(
+			"[data-editor-tabs] [role='tab']",
+		);
+		if (!button) return;
+		const tabs = button.closest<HTMLElement>("[data-editor-tabs]");
+		if (!tabs) return;
+		for (const candidate of tabs.querySelectorAll<HTMLButtonElement>(
+			"[role='tab']",
+		)) {
+			const active = candidate === button;
+			candidate.setAttribute("aria-selected", String(active));
+			candidate.tabIndex = active ? 0 : -1;
+			const panel = tabs.querySelector<HTMLElement>(
+				`#${candidate.getAttribute("aria-controls")}`,
+			);
+			if (panel) panel.hidden = !active;
+		}
+	});
 }
 
 function formatDate(value: unknown) {
@@ -477,6 +641,7 @@ export async function initMicroCMSPreview() {
 		if (!body.textContent?.trim() && !body.querySelector("img")) {
 			body.append(make("p", "preview-empty", "本文はまだ入力されていません。"));
 		}
+		wirePreviewTabs(body);
 
 		status.hidden = true;
 		root.hidden = false;

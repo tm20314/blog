@@ -87,6 +87,44 @@ export type ProductBlock = {
 	}>;
 };
 
+export type LinkCardBlock = {
+	fieldId: "linkCard";
+	url: string;
+	title?: string;
+	description?: string;
+	image?: MicroCMSImage;
+};
+
+export type EmbedBlock = {
+	fieldId: "embed";
+	url: string;
+	caption?: string;
+};
+
+export type ImagePanelBlock = {
+	fieldId: "imagePanel";
+	image?: MicroCMSImage;
+	alt?: string;
+	caption?: string;
+	style: "plain" | "rounded" | "shadow" | "browser";
+};
+
+export type ColumnsBlock = {
+	fieldId: "columns";
+	leftTitle?: string;
+	leftBody: string;
+	rightTitle?: string;
+	rightBody: string;
+};
+
+export type TabsBlock = {
+	fieldId: "tabs";
+	tabs: Array<{
+		label: string;
+		body: string;
+	}>;
+};
+
 export type EditorialBlock =
 	| RichTextBlock
 	| BoxBlock
@@ -97,7 +135,12 @@ export type EditorialBlock =
 	| StepListBlock
 	| ProsConsBlock
 	| ComparisonBlock
-	| ProductBlock;
+	| ProductBlock
+	| LinkCardBlock
+	| EmbedBlock
+	| ImagePanelBlock
+	| ColumnsBlock
+	| TabsBlock;
 
 export type MicroCMSArticle = {
 	id: string;

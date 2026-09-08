@@ -21,6 +21,8 @@
 
 `content` は手早く本文だけを書く場合に使えます。見た目を作り込みたい記事では `blocks` を使い、通常の文章は `richText`、レビューでは `prosCons`、`comparison`、`product` を順番に挿入します。両方へ入力した場合は `content` の後に `blocks` が表示されます。
 
+`blocks` では、STORK19系のブログカード、SNS・動画埋め込み、装飾画像、2カラム、タブ切り替えも選択できます。URLを貼るだけの埋め込みはYouTube、X、Instagram、TikTok、Vimeoに対応しています。入力項目の一覧は `docs/editor-blocks.md` を参照してください。
+
 ## 2. Cloudflare Pagesへ秘密情報を登録する
 
 ローカルでは `.env.example` をコピーして値を入れます。本番ではCloudflare Pagesの環境変数に次を登録します。

@@ -16,6 +16,7 @@
 		"test:domain": "node --test tests/domain-redirect.test.mjs",
 		"test:microcms": "node --import tsx --test tests/microcms-normalize.test.ts",
 		"test:preview": "node --test tests/microcms-preview-function.test.mjs",
+		"test:cms-embeds": "node --import tsx --test tests/embed-utils.test.ts",
 		"new-post": "node scripts/new-post.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",
