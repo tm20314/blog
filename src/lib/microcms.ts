@@ -1,11 +1,14 @@
 import type {
+	EditorialBlock,
 	MicroCMSArticle,
 	MicroCMSListResponse,
+	NormalizedMicroCMSArticle,
 } from "@/types/editorial-blocks";
 
-const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN?.trim();
-const apiKey = import.meta.env.MICROCMS_API_KEY?.trim();
-const apiEndpoint = import.meta.env.MICROCMS_API_ENDPOINT?.trim() || "blogs";
+const env = import.meta.env ?? {};
+const serviceDomain = env.MICROCMS_SERVICE_DOMAIN?.trim();
+const apiKey = env.MICROCMS_API_KEY?.trim();
+const apiEndpoint = env.MICROCMS_API_ENDPOINT?.trim() || "blogs";
 
 export const isMicroCMSConfigured = Boolean(serviceDomain && apiKey);
 
@@ -51,6 +54,181 @@ export async function getMicroCMSArticles(
 	return request(apiUrl("", queries));
 }
 
+export async function getAllMicroCMSArticles() {
+	const firstPage = await getMicroCMSArticles({
+		limit: 100,
+		orders: "-publishedAt",
+	});
+	const contents = [...firstPage.contents];
+
+	for (
+		let offset = contents.length;
+		offset < firstPage.totalCount;
+		offset += 100
+	) {
+		const page = await getMicroCMSArticles({
+			limit: 100,
+			offset,
+			orders: "-publishedAt",
+		});
+		contents.push(...page.contents);
+	}
+
+	return contents;
+}
+
 export async function getMicroCMSArticle(contentId: string) {
 	return request<MicroCMSArticle>(apiUrl(contentId));
+}
+
+const asString = (value: unknown) =>
+	typeof value === "string" ? value.trim() : "";
+
+const splitLines = (value: unknown) =>
+	asString(value)
+		.split(/\r?\n/u)
+		.map((item) => item.trim())
+		.filter(Boolean);
+
+const splitCells = (value: string) =>
+	value
+		.split(/[|｜]/u)
+		.map((item) => item.trim())
+		.filter(Boolean);
+
+const asImage = (value: unknown) => {
+	if (!value || typeof value !== "object") return undefined;
+	const image = value as Record<string, unknown>;
+	const url = asString(image.url);
+	if (!url) return undefined;
+	return {
+		url,
+		...(typeof image.width === "number" ? { width: image.width } : {}),
+		...(typeof image.height === "number" ? { height: image.height } : {}),
+		...(asString(image.alt) ? { alt: asString(image.alt) } : {}),
+	};
+};
+
+function normalizeBlock(block: Record<string, unknown>): EditorialBlock | null {
+	const fieldId = asString(block.fieldId);
+
+	switch (fieldId) {
+		case "richText":
+			return { fieldId, body: asString(block.body) };
+		case "box": {
+			const tone = asString(block.tone);
+			return {
+				fieldId,
+				tone: ["note", "point", "check", "warning"].includes(tone)
+					? (tone as "note" | "point" | "check" | "warning")
+					: "note",
+				title: asString(block.title) || undefined,
+				body: asString(block.body),
+			};
+		}
+		case "button": {
+			const variant = asString(block.variant);
+			return {
+				fieldId,
+				label: asString(block.label),
+				url: asString(block.url),
+				variant: variant === "secondary" ? "secondary" : "primary",
+			};
+		}
+		case "speech":
+			return {
+				fieldId,
+				name: asString(block.name) || undefined,
+				avatar: asImage(block.avatar),
+				side: asString(block.side) === "right" ? "right" : "left",
+				body: asString(block.body),
+			};
+		case "faq":
+			return {
+				fieldId,
+				question: asString(block.question),
+				answer: asString(block.answer),
+			};
+		case "accordion":
+			return {
+				fieldId,
+				title: asString(block.title),
+				body: asString(block.body),
+			};
+		case "stepList":
+			return {
+				fieldId,
+				title: asString(block.title) || undefined,
+				items: splitLines(block.itemsText).map((line) => {
+					const [title, ...body] = splitCells(line);
+					return { title, body: body.join("｜") };
+				}),
+			};
+		case "prosCons":
+			return {
+				fieldId,
+				title: asString(block.title) || undefined,
+				pros: splitLines(block.prosText),
+				cons: splitLines(block.consText),
+			};
+		case "comparison":
+			return {
+				fieldId,
+				caption: asString(block.caption) || undefined,
+				headers: splitCells(asString(block.headersText)),
+				rows: splitLines(block.rowsText).map(splitCells),
+			};
+		case "product": {
+			const links = [
+				{
+					label: "Amazonで見る",
+					url: asString(block.amazonUrl),
+					type: "affiliate" as const,
+				},
+				{
+					label: "楽天で見る",
+					url: asString(block.rakutenUrl),
+					type: "affiliate" as const,
+				},
+				{
+					label: "公式サイト",
+					url: asString(block.officialUrl),
+					type: "official" as const,
+				},
+			].filter((link) => link.url);
+			return {
+				fieldId,
+				name: asString(block.name),
+				summary: asString(block.summary) || undefined,
+				image: asImage(block.image),
+				disclosure: asString(block.disclosure) || undefined,
+				links,
+			};
+		}
+		default:
+			return null;
+	}
+}
+
+export function normalizeMicroCMSArticle(
+	article: MicroCMSArticle,
+): NormalizedMicroCMSArticle | null {
+	const slug = asString(article.slug).replace(/^\/+|\/+$/gu, "");
+	if (!slug) return null;
+
+	const blocks = (article.blocks ?? [])
+		.map(normalizeBlock)
+		.filter((block): block is EditorialBlock => block !== null);
+	const content = asString(article.content);
+	if (content) blocks.unshift({ fieldId: "richText", body: content });
+
+	return {
+		...article,
+		slug,
+		category:
+			typeof article.category === "string"
+				? article.category.trim()
+				: article.category?.name?.trim() || "",
+		blocks,
+	};
 }

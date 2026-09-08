@@ -25,7 +25,9 @@ export async function GET(context: APIContext) {
 		site: context.site ?? "https://fuwari.vercel.app",
 		items: blog.map((post) => {
 			const content =
-				typeof post.body === "string" ? post.body : String(post.body || "");
+				post.source === "local" && typeof post.localEntry.body === "string"
+					? post.localEntry.body
+					: post.data.description;
 			const cleanedContent = stripInvalidXmlChars(content);
 			return {
 				title: post.data.title,

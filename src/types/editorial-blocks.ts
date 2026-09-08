@@ -7,6 +7,11 @@ export type MicroCMSImage = {
 	alt?: string;
 };
 
+export type MicroCMSCategory = {
+	id: string;
+	name: string;
+};
+
 export type RichTextBlock = {
 	fieldId: "richText";
 	body: string;
@@ -103,9 +108,21 @@ export type MicroCMSArticle = {
 	title: string;
 	slug?: string;
 	description?: string;
+	content?: string;
+	eyecatch?: MicroCMSImage;
 	cover?: MicroCMSImage;
-	category?: string;
+	category?: string | MicroCMSCategory;
 	tags?: string[];
+	tagsText?: string;
+	blocks?: Array<Record<string, unknown>>;
+};
+
+export type NormalizedMicroCMSArticle = Omit<
+	MicroCMSArticle,
+	"blocks" | "category"
+> & {
+	slug: string;
+	category: string;
 	blocks: EditorialBlock[];
 };
 

@@ -1,12 +1,12 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import path from "node:path";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import type { ArticleEntry, PostForList } from "@utils/content-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { getCategoryUrl, getDir, getPostUrlBySlug } from "@utils/url-utils";
 
 interface Props {
-	post: CollectionEntry<"posts">;
+	post: ArticleEntry | PostForList;
 	variant?: "standard" | "lead";
 }
 
@@ -19,7 +19,7 @@ const coverImage = post.data.image?.trim() || "/images/default-thumbnail.png";
 <article class:list={["article-card", `article-card--${variant}`]}>
 	<ImageWrapper
 		src={coverImage}
-		basePath={path.join("content/posts/", getDir(post.id))}
+		basePath={post.source === "local" ? path.join("content/posts/", getDir(post.id)) : "/"}
 		class="article-card__media"
 		alt=""
 	/>

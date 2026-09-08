@@ -2,11 +2,12 @@
 import path from "node:path";
 import RelatedPosts from "@components/editorial/RelatedPosts.astro";
 import ShareLinks from "@components/editorial/ShareLinks.astro";
+import StructuredArticleBody from "@components/editorial/StructuredArticleBody.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
-import { getSortedPosts } from "@utils/content-utils";
+import { type ArticleEntry, getSortedPosts } from "@utils/content-utils";
 import { selectRelatedPosts } from "@utils/related-posts";
 import {
 	getCategoryUrl,
@@ -29,8 +30,12 @@ export async function getStaticPaths() {
 	}));
 }
 
-const { entry } = Astro.props;
-const { Content, headings, remarkPluginFrontmatter } = await entry.render();
+const { entry } = Astro.props as { entry: ArticleEntry };
+const localRender =
+	entry.source === "local" ? await entry.localEntry.render() : null;
+const Content = localRender?.Content;
+const headings = localRender?.headings ?? [];
+const remarkPluginFrontmatter = localRender?.remarkPluginFrontmatter ?? {};
 const language = entry.data.lang || siteConfig.lang;
 const description = entry.data.description || entry.data.title;
 const category = entry.data.category?.trim() || i18n(I18nKey.uncategorized);
@@ -52,6 +57,24 @@ const firstHeadingDepth =
 const tocHeadings = headings.filter(
 	(heading) => heading.depth < firstHeadingDepth + siteConfig.toc.depth,
 );
+const cmsText =
+	entry.source === "microcms"
+		? entry.cmsArticle.blocks
+				.map((block) => JSON.stringify(block))
+				.join(" ")
+				.replace(/<[^>]*>/gu, " ")
+				.replace(/[{}[\]"_:,]/gu, " ")
+				.replace(/\s+/gu, " ")
+				.trim()
+		: "";
+const wordCount =
+	entry.source === "microcms"
+		? cmsText.length
+		: (remarkPluginFrontmatter.words ?? 0);
+const readingMinutes =
+	entry.source === "microcms"
+		? Math.max(1, Math.ceil(wordCount / 500))
+		: (remarkPluginFrontmatter.minutes ?? 0);
 
 const jsonLd = {
 	"@context": "https://schema.org",
@@ -112,8 +135,8 @@ const jsonLd = {
 							更新 {formatDateToYYYYMMDD(entry.data.updated).replaceAll("-", ".")}
 						</time>
 					)}
-					<span>{remarkPluginFrontmatter.words ?? 0}文字</span>
-					<span>{remarkPluginFrontmatter.minutes ?? 0}分</span>
+					<span>{wordCount}文字</span>
+					<span>{readingMinutes}分</span>
 				</div>
 				{entry.data.tags.length > 0 && (
 					<nav class="article-tags" aria-label="記事タグ">
@@ -125,16 +148,20 @@ const jsonLd = {
 			<ImageWrapper
 				id="post-cover"
 				src={coverImage}
-				basePath={path.join("content/posts/", getDir(entry.id))}
+				basePath={entry.source === "local" ? path.join("content/posts/", getDir(entry.id)) : "/"}
 				class="article-cover"
 				alt=""
 			/>
 
 			<div class="article-layout">
 				<div class="article-reading">
-					<Markdown class="editorial-prose">
-						<Content />
-					</Markdown>
+					{entry.source === "local" && Content ? (
+						<Markdown class="editorial-prose">
+							<Content />
+						</Markdown>
+					) : entry.source === "microcms" ? (
+						<StructuredArticleBody blocks={entry.cmsArticle.blocks} />
+					) : null}
 
 					<AdSlot
 						slot="5889839621"

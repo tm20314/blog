@@ -1,16 +1,14 @@
-import type { CollectionEntry } from "astro:content";
-
-type Post = CollectionEntry<"posts">;
+import type { ArticleEntry } from "@utils/content-utils";
 
 function normalized(value: string | null | undefined) {
 	return value?.trim().toLocaleLowerCase("ja") ?? "";
 }
 
 export function selectRelatedPosts(
-	current: Post,
-	candidates: Post[],
+	current: ArticleEntry,
+	candidates: ArticleEntry[],
 	limit = 3,
-): Post[] {
+): ArticleEntry[] {
 	const currentCategory = normalized(current.data.category);
 	const currentTags = new Set(current.data.tags.map(normalized));
 
