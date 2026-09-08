@@ -1,0 +1,97 @@
+---
+interface Props {
+	slot: string;
+	placement: "feed" | "inline" | "end";
+	format?: "auto" | "fluid";
+	layout?: string;
+	layoutKey?: string;
+	afterParagraph?: number;
+	minParagraphs?: number;
+}
+
+const {
+	slot,
+	placement,
+	format = "auto",
+	layout,
+	layoutKey,
+	afterParagraph = 0,
+	minParagraphs = 0,
+} = Astro.props;
+
+const rawClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID?.trim() ?? "";
+const clientId = /^ca-pub-\d+$/.test(rawClientId) ? rawClientId : "";
+const adSlot = /^\d+$/.test(slot) ? slot : "";
+const elementId = `adsense-${placement}-${adSlot}`;
+---
+
+{clientId && adSlot && (
+	<aside
+		id={elementId}
+		class:list={["ad-placement", `ad-placement--${placement}`]}
+		data-after-paragraph={afterParagraph}
+		data-min-paragraphs={minParagraphs}
+		aria-label="広告"
+	>
+		<span class="ad-placement__label">Advertisement</span>
+		<ins
+			class="adsbygoogle"
+			style={layout === "in-article" ? "display:block;text-align:center" : "display:block"}
+			data-ad-client={clientId}
+			data-ad-slot={adSlot}
+			data-ad-format={format}
+			data-ad-layout={layout}
+			data-ad-layout-key={layoutKey}
+			data-full-width-responsive={format === "auto" ? "true" : undefined}
+		></ins>
+		<script is:inline>
+			(() => {
+				const container = document.currentScript?.closest(".ad-placement");
+				if (!container) return;
+				const afterParagraph = Number(container.dataset.afterParagraph || 0);
+				const minParagraphs = Number(container.dataset.minParagraphs || 0);
+
+				if (afterParagraph > 0) {
+					const article = document.querySelector(".editorial-prose");
+					const paragraphs = Array.from(article?.querySelectorAll("p") ?? []).filter(
+						(paragraph) => !paragraph.closest("blockquote, figure, aside, li, .smart-link-card, .media-embed"),
+					);
+					const target = paragraphs[afterParagraph - 1];
+
+					if (paragraphs.length < minParagraphs || !target) {
+						container.remove();
+						return;
+					}
+
+					target.insertAdjacentElement("afterend", container);
+				}
+
+				const requestAd = () => {
+					const ad = container.querySelector(".adsbygoogle");
+					if (!ad || ad.dataset.adsbygoogleStatus) return;
+
+					try {
+						(window.adsbygoogle = window.adsbygoogle || []).push({});
+					} catch (error) {
+						console.warn("AdSense slot could not be initialized", error);
+					}
+				};
+
+				if (!("IntersectionObserver" in window)) {
+					requestAd();
+					return;
+				}
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						if (!entries.some((entry) => entry.isIntersecting)) return;
+						observer.disconnect();
+						requestAd();
+					},
+					{ rootMargin: "600px 0px" },
+				);
+				observer.observe(container);
+			})();
+		</script>
+	</aside>
+)}

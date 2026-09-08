@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import avatarImage from "@assets/images/tumotumo-profile.jpg";
 import bannerImage from "@assets/images/demo-banner.jpg";
 import ArticleCard from "@components/editorial/ArticleCard.astro";
+import AdSlot from "@components/integrations/AdSlot.astro";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
 import type { GetStaticPaths } from "astro";
 import { projects } from "@/data/projects";
@@ -90,8 +91,19 @@ const homeUrl = url("/");
 				<a class="text-link" href={url("/archive/")}>すべて見る <span aria-hidden="true">→</span></a>
 			</header>
 			<div class="article-index">
-				{visiblePosts.map((post, index) => (
+				{visiblePosts.slice(0, 2).map((post, index) => (
 					<ArticleCard post={post} variant={index === 0 ? "lead" : "standard"} />
+				))}
+				{visiblePosts.length > 2 && (
+					<AdSlot
+						slot="7990861532"
+						placement="feed"
+						format="fluid"
+						layoutKey="-6t+ed+2i-1n-4w"
+					/>
+				)}
+				{visiblePosts.slice(2).map((post) => (
+					<ArticleCard post={post} variant="standard" />
 				))}
 			</div>
 		</section>

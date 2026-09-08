@@ -15,6 +15,7 @@ import {
 import "katex/dist/katex.css";
 import { licenseConfig, profileConfig, siteConfig } from "@/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
+import AdSlot from "../../components/integrations/AdSlot.astro";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
 export async function getStaticPaths() {
@@ -130,6 +131,17 @@ const jsonLd = {
 					<Markdown class="editorial-prose">
 						<Content />
 					</Markdown>
+
+					<AdSlot
+						slot="5889839621"
+						placement="inline"
+						format="fluid"
+						layout="in-article"
+						afterParagraph={2}
+						minParagraphs={4}
+					/>
+
+					<AdSlot slot="7258761611" placement="end" />
 
 					{licenseConfig.enable && (
 						<aside class="article-license" aria-labelledby="license-heading">
