@@ -2,7 +2,7 @@
  * theme: studied-DNA (source: https://tobalog.com/) · studied: yes · DNA-source: url
  * sources: https://tobalog.com/ · https://www.gizmodo.jp/ · https://gori.me/ · https://gadgetmitchy.com/
  * observed: paper=oklch(0.955 0 0) · body=DNP Shuei Gothic Gin/Yu Gothic · applied: paper=oklch(0.972 0.006 112) · accent=oklch(0.89 0.228 126)
- * type: Bricolage Grotesque Variable + Noto Sans JP Variable · enrichment: editorial photography + transparent product mockups · nav: N9 Edge-aligned minimal · footer: Ft5 Statement
+ * type: Bricolage Grotesque Variable + Noto Sans JP Variable · enrichment: editorial photography + icon-matched product mockups + user portrait · nav: N9 Edge-aligned minimal · footer: Ft5 Statement
  * audience: app users, hiring teams, and indie developers · use: read the blog and evaluate released apps · tone: technical editorial + playful workbench · motion: none
  * contrast: pass (40–41) · slop: pass (1–58) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
  * icons: pass (30) · mobile: pass (34, 49, 50–57)
@@ -575,6 +575,26 @@ a {
   background: var(--color-paper-2);
 }
 
+.project__visual--okari {
+  background: var(--color-app-okari);
+}
+
+.project__visual--kokorahen {
+  background: var(--color-app-kokorahen);
+}
+
+.project__visual--stepbeat {
+  background: var(--color-app-stepbeat);
+}
+
+.project__visual--step2themoon {
+  background: var(--color-app-step2themoon);
+}
+
+.project__visual--motoparking {
+  background: var(--color-app-motoparking);
+}
+
 .project__screen {
   width: auto;
   height: min(25rem, 112vw);
@@ -706,9 +726,11 @@ a {
 
 .author-panel__portrait {
   width: 100%;
-  height: 100%;
-  min-height: 20rem;
+  height: auto;
+  aspect-ratio: 1;
+  align-self: center;
   object-fit: cover;
+  object-position: center;
 }
 
 .author-panel__body {
@@ -1967,7 +1989,10 @@ a {
 }
 
 .profile-sheet__portrait {
-  min-height: 22rem;
+  aspect-ratio: 1;
+  align-self: center;
+  min-height: 0;
+  overflow: hidden;
   background: var(--color-paper-2);
 }
 

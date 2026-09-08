@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { getEntry, render } from "astro:content";
-import avatarImage from "@assets/images/demo-avatar.jpg";
+import avatarImage from "@assets/images/tumotumo-profile.jpg";
 import Markdown from "@components/misc/Markdown.astro";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
 import { url } from "@utils/url-utils";
@@ -33,9 +33,10 @@ const { Content } = await render(aboutPost);
 			<div class="profile-sheet__portrait">
 				<Image
 					src={avatarImage}
-					alt="TumoTumoのプロフィール画像"
-					width={720}
-					height={720}
+					alt="屋外で微笑むTumoTumoのポートレート"
+					widths={[360, 600, 900]}
+					sizes="(min-width: 48rem) 44vw, 100vw"
+					format="avif"
 					loading="eager"
 				/>
 			</div>

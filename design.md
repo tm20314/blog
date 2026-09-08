@@ -24,6 +24,7 @@ Editorial。ガジェットを実際に使った記録と、個人開発の過�
 - `--color-accent` oklch(0.89 0.228 126)
 - `--color-accent-ink` oklch(0.18 0.028 126)
 - `--color-focus` oklch(0.52 0.152 132)
+- App showcase surfaces follow each icon hue: warm white, orange, green, beige, and blue. Their active values live in `tokens.css` as `--color-app-*` tokens.
 
 Accent is a signal, not a surface. Lime stays below roughly 5% of each viewport.
 
@@ -100,6 +101,11 @@ Accent is a signal, not a surface. Lime stays below roughly 5% of each viewport.
   --color-accent: oklch(0.89 0.228 126);
   --color-accent-ink: oklch(0.18 0.028 126);
   --color-focus: oklch(0.52 0.152 132);
+  --color-app-okari: oklch(0.972 0.006 112);
+  --color-app-kokorahen: oklch(0.9 0.105 62.5);
+  --color-app-stepbeat: oklch(0.9 0.078 142.7);
+  --color-app-step2themoon: oklch(0.87 0.035 80);
+  --color-app-motoparking: oklch(0.91 0.05 225.2);
 
   --font-display: "Bricolage Grotesque Variable", "Noto Sans JP Variable", sans-serif;
   --font-body: "Noto Sans JP Variable", "IBM Plex Sans Variable", sans-serif;
@@ -153,6 +159,11 @@ Accent is a signal, not a surface. Lime stays below roughly 5% of each viewport.
   --color-rule: oklch(0.79 0.012 116);
   --color-accent: oklch(0.89 0.228 126);
   --color-focus: oklch(0.52 0.152 132);
+  --color-app-okari: oklch(0.972 0.006 112);
+  --color-app-kokorahen: oklch(0.9 0.105 62.5);
+  --color-app-stepbeat: oklch(0.9 0.078 142.7);
+  --color-app-step2themoon: oklch(0.87 0.035 80);
+  --color-app-motoparking: oklch(0.91 0.05 225.2);
 
   --font-display: "Bricolage Grotesque Variable", "Noto Sans JP Variable", sans-serif;
   --font-body: "Noto Sans JP Variable", "IBM Plex Sans Variable", sans-serif;
@@ -199,7 +210,12 @@ Accent is a signal, not a surface. Lime stays below roughly 5% of each viewport.
     "rule": { "$value": "oklch(0.79 0.012 116)", "$type": "color" },
     "accent": { "$value": "oklch(0.89 0.228 126)", "$type": "color" },
     "accent-ink": { "$value": "oklch(0.18 0.028 126)", "$type": "color" },
-    "focus": { "$value": "oklch(0.52 0.152 132)", "$type": "color" }
+    "focus": { "$value": "oklch(0.52 0.152 132)", "$type": "color" },
+    "app-okari": { "$value": "oklch(0.972 0.006 112)", "$type": "color" },
+    "app-kokorahen": { "$value": "oklch(0.9 0.105 62.5)", "$type": "color" },
+    "app-stepbeat": { "$value": "oklch(0.9 0.078 142.7)", "$type": "color" },
+    "app-step2themoon": { "$value": "oklch(0.87 0.035 80)", "$type": "color" },
+    "app-motoparking": { "$value": "oklch(0.91 0.05 225.2)", "$type": "color" }
   },
   "font": {
     "display": { "$value": "Bricolage Grotesque Variable, Noto Sans JP Variable, sans-serif", "$type": "fontFamily" },
@@ -246,6 +262,11 @@ Accent is a signal, not a surface. Lime stays below roughly 5% of each viewport.
   --border: 0.79 0.012 116;
   --input: 0.79 0.012 116;
   --ring: 0.52 0.152 132;
+  --app-okari: 0.972 0.006 112;
+  --app-kokorahen: 0.9 0.105 62.5;
+  --app-stepbeat: 0.9 0.078 142.7;
+  --app-step2themoon: 0.87 0.035 80;
+  --app-motoparking: 0.91 0.05 225.2;
   --radius: 0.25rem;
 }
 ```

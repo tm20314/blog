@@ -18,6 +18,11 @@
   --color-accent: oklch(0.89 0.228 126);
   --color-accent-ink: oklch(0.18 0.028 126);
   --color-focus: oklch(0.52 0.152 132);
+  --color-app-okari: oklch(0.972 0.006 112);
+  --color-app-kokorahen: oklch(0.9 0.105 62.5);
+  --color-app-stepbeat: oklch(0.9 0.078 142.7);
+  --color-app-step2themoon: oklch(0.87 0.035 80);
+  --color-app-motoparking: oklch(0.91 0.05 225.2);
   --color-transparent: oklch(0.19 0.014 124 / 0);
 
   /* Compatibility aliases for Markdown and Expressive Code. */

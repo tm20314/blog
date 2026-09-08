@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import avatarImage from "@assets/images/demo-avatar.jpg";
+import avatarImage from "@assets/images/tumotumo-profile.jpg";
 import bannerImage from "@assets/images/demo-banner.jpg";
 import ArticleCard from "@components/editorial/ArticleCard.astro";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
@@ -129,7 +129,7 @@ const homeUrl = url("/");
 				<div class="projects-grid">
 					{projects.map((project, index) => (
 						<article class="project">
-							<figure class="project__visual">
+							<figure class:list={["project__visual", `project__visual--${project.visualTone}`]}>
 								<Image
 									class="project__screen"
 									src={project.screen}
@@ -174,7 +174,15 @@ const homeUrl = url("/");
 
 		{isFirstPage && (
 			<section class="author-panel" aria-labelledby="author-heading">
-				<Image class="author-panel__portrait" src={avatarImage} alt="TumoTumoのプロフィール画像" width={320} height={320} loading="lazy" />
+				<Image
+					class="author-panel__portrait"
+					src={avatarImage}
+					alt="屋外で微笑むTumoTumoのポートレート"
+					widths={[320, 480, 640]}
+					sizes="(min-width: 48rem) 40vw, 100vw"
+					format="avif"
+					loading="lazy"
+				/>
 				<div class="author-panel__body">
 					<p class="author-panel__role">Developer / Writer</p>
 					<h2 id="author-heading">TumoTumo</h2>
@@ -184,7 +192,7 @@ const homeUrl = url("/");
 			</section>
 		)}
 
-		{page.lastPage > 1 && (
+		{!isFirstPage && page.lastPage > 1 && (
 			<nav class="pagination" aria-label="記事一覧のページ送り">
 				{page.url.prev ? <a href={page.url.prev}>← 前のページ</a> : <span aria-hidden="true" />}
 				<span class="pagination__status">{page.currentPage} / {page.lastPage}</span>
