@@ -1,10 +1,13 @@
 ---
 import path from "node:path";
+import RelatedPosts from "@components/editorial/RelatedPosts.astro";
+import ShareLinks from "@components/editorial/ShareLinks.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
+import { selectRelatedPosts } from "@utils/related-posts";
 import {
 	getCategoryUrl,
 	getDir,
@@ -14,8 +17,8 @@ import {
 } from "@utils/url-utils";
 import "katex/dist/katex.css";
 import { licenseConfig, profileConfig, siteConfig } from "@/config";
-import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import AdSlot from "../../components/integrations/AdSlot.astro";
+import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
 export async function getStaticPaths() {
@@ -42,6 +45,7 @@ const canonicalUrl = new URL(
 	getPostUrlBySlug(entry.slug),
 	Astro.site ?? Astro.url.origin,
 ).toString();
+const relatedPosts = selectRelatedPosts(entry, await getSortedPosts(), 3);
 const headingDepths = headings.map((heading) => heading.depth);
 const firstHeadingDepth =
 	headingDepths.length > 0 ? Math.min(...headingDepths) : 1;
@@ -143,6 +147,8 @@ const jsonLd = {
 
 					<AdSlot slot="7258761611" placement="end" />
 
+					<ShareLinks title={entry.data.title} url={canonicalUrl} />
+
 					{licenseConfig.enable && (
 						<aside class="article-license" aria-labelledby="license-heading">
 							<h2 id="license-heading">この記事について</h2>
@@ -183,21 +189,6 @@ const jsonLd = {
 			</div>
 		</article>
 
-		{(entry.data.nextSlug || entry.data.prevSlug) && (
-			<nav class="article-pagination" aria-label="前後の記事">
-				{entry.data.nextSlug ? (
-					<div class="article-pagination__item">
-						<p>{entry.data.nextTitle}</p>
-						<a href={getPostUrlBySlug(entry.data.nextSlug)}>← 新しい記事</a>
-					</div>
-				) : <span aria-hidden="true" />}
-				{entry.data.prevSlug ? (
-					<div class="article-pagination__item article-pagination__item--next">
-						<p>{entry.data.prevTitle}</p>
-						<a href={getPostUrlBySlug(entry.data.prevSlug)}>過去の記事 →</a>
-					</div>
-				) : <span aria-hidden="true" />}
-			</nav>
-		)}
+		<RelatedPosts posts={relatedPosts} />
 	</main>
 </EditorialLayout>

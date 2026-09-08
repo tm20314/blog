@@ -3,7 +3,6 @@ import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import swup from "@swup/astro";
 import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
@@ -23,7 +22,12 @@ import {
 	EditorialAccordionComponent,
 	EditorialBoxComponent,
 	EditorialButtonComponent,
+	EditorialComparisonComponent,
+	EditorialConsComponent,
 	EditorialFaqComponent,
+	EditorialProductComponent,
+	EditorialProsComponent,
+	EditorialProsConsComponent,
 	EditorialSpeechComponent,
 	EditorialStepComponent,
 	EditorialStepsComponent,
@@ -33,8 +37,6 @@ import { rehypeSmartEmbeds } from "./src/plugins/rehype-smart-embeds.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
-
-const isCloudflarePages = process.env.CF_PAGES === "1";
 
 // Content files keep their original headings. At render time, move document
 // headings down one level so the route title can be the single page-level h1.
@@ -54,28 +56,12 @@ function rehypeShiftDocumentHeadings() {
 
 // https://astro.build/config
 export default defineConfig({
-	site: isCloudflarePages
-		? "https://tumolog.com"
-		: "https://tm20314.github.io",
-	base: isCloudflarePages ? "/" : "/blog",
+	site: "https://tumolog.com",
+	base: "/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
 			nesting: true,
-		}),
-		swup({
-			theme: false,
-			animationClass: "transition-swup-", // see https://swup.js.org/options/#animationselector
-			// the default value `transition-` cause transition delay
-			// when the Tailwind class `transition-all` is used
-			containers: ["main", "#toc"],
-			smoothScrolling: true,
-			cache: true,
-			preload: true,
-			accessibility: true,
-			updateHead: true,
-			updateBodyClass: false,
-			globalInstance: true,
 		}),
 		icon({
 			include: {
@@ -163,6 +149,11 @@ export default defineConfig({
 						accordion: EditorialAccordionComponent,
 						steps: EditorialStepsComponent,
 						step: EditorialStepComponent,
+						proscons: EditorialProsConsComponent,
+						pros: EditorialProsComponent,
+						cons: EditorialConsComponent,
+						comparison: EditorialComparisonComponent,
+						product: EditorialProductComponent,
 					},
 				},
 			],

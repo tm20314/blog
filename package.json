@@ -12,6 +12,8 @@
 		"type-check": "tsc --noEmit --isolatedDeclarations",
 		"test:embeds": "node --test tests/rehype-smart-embeds.test.mjs",
 		"test:blocks": "node --test tests/rehype-editorial-blocks.test.mjs",
+		"test:related": "node --import tsx --test tests/related-posts.test.ts",
+		"test:domain": "node --test tests/domain-redirect.test.mjs",
 		"new-post": "node scripts/new-post.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",
@@ -76,7 +78,8 @@
 		"@types/mdast": "^4.0.4",
 		"@types/sanitize-html": "^2.16.0",
 		"postcss-import": "^16.1.1",
-		"postcss-nesting": "^13.0.2"
+		"postcss-nesting": "^13.0.2",
+		"tsx": "^4.20.5"
 	},
 	"packageManager": "pnpm@9.14.4"
 }

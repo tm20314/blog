@@ -1,0 +1,190 @@
+---
+import sanitizeHtml from "sanitize-html";
+import type { EditorialBlock } from "@/types/editorial-blocks";
+
+interface Props {
+	blocks: EditorialBlock[];
+}
+
+const { blocks } = Astro.props;
+const allowedTags = [
+	...sanitizeHtml.defaults.allowedTags,
+	"figure",
+	"figcaption",
+	"img",
+	"h2",
+	"h3",
+	"h4",
+];
+const cleanHtml = (html: string) =>
+	sanitizeHtml(html, {
+		allowedTags,
+		allowedAttributes: {
+			"*": ["class"],
+			a: ["href", "target", "rel", "class"],
+			img: ["src", "alt", "width", "height", "loading", "decoding"],
+		},
+		allowedSchemes: ["http", "https", "mailto"],
+		transformTags: {
+			a: (_tagName, attribs) => ({
+				tagName: "a",
+				attribs: {
+					...attribs,
+					rel:
+						attribs.target === "_blank" ? "noopener noreferrer" : attribs.rel,
+				},
+			}),
+		},
+	});
+const textOnly = (html: string) =>
+	sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} }).trim();
+const safeUrl = (value: string) =>
+	/^(?:https?:\/\/|mailto:|\/|#)/u.test(value.trim()) ? value.trim() : "#";
+const safeMediaUrl = (value: string) =>
+	/^(?:https?:\/\/|\/)/u.test(value.trim()) ? value.trim() : "";
+const faqItems = blocks.filter(
+	(block): block is Extract<EditorialBlock, { fieldId: "faq" }> =>
+		block.fieldId === "faq",
+);
+const faqSchema = faqItems.length
+	? {
+			"@context": "https://schema.org",
+			"@type": "FAQPage",
+			mainEntity: faqItems.map((item) => ({
+				"@type": "Question",
+				name: item.question,
+				acceptedAnswer: {
+					"@type": "Answer",
+					text: textOnly(item.answer),
+				},
+			})),
+		}
+	: null;
+---
+
+{faqSchema && (
+	<script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+)}
+
+<div class="custom-md editorial-prose structured-article" data-pagefind-body>
+	{blocks.map((block) => (
+		<>
+			{block.fieldId === "richText" && (
+				<div class="structured-article__rich-text" set:html={cleanHtml(block.body)} />
+			)}
+
+			{block.fieldId === "box" && (
+				<aside class:list={["editor-block", "editor-box", `editor-box--${block.tone}`]}>
+					{block.title && <p class="editor-box__title">{block.title}</p>}
+					<div class="editor-box__body" set:html={cleanHtml(block.body)} />
+				</aside>
+			)}
+
+			{block.fieldId === "button" && (
+				<a
+					class:list={["editor-block", "editor-button", `editor-button--${block.variant ?? "primary"}`, "no-styling"]}
+					href={safeUrl(block.url)}
+				>
+					<span>{block.label}</span><span class="editor-button__icon" aria-hidden="true">↗</span>
+				</a>
+			)}
+
+			{block.fieldId === "speech" && (
+				<aside class:list={["editor-block", "editor-speech", `editor-speech--${block.side ?? "left"}`]} aria-label={`${block.name ?? "つもつも"}のコメント`}>
+					<div class="editor-speech__person">
+						<span class="editor-speech__avatar" aria-hidden="true">
+						{block.avatar && safeMediaUrl(block.avatar.url)
+							? <img src={safeMediaUrl(block.avatar.url)} alt="" loading="lazy" decoding="async" />
+								: <span class="editor-speech__symbol">つ</span>}
+						</span>
+						<span class="editor-speech__name">{block.name ?? "つもつも"}</span>
+					</div>
+					<div class="editor-speech__body" set:html={cleanHtml(block.body)} />
+				</aside>
+			)}
+
+			{block.fieldId === "faq" && (
+				<section class="editor-block editor-faq">
+					<h3 class="editor-faq__question">
+						<span class="editor-faq__mark">Q</span><span class="editor-faq__title">{block.question}</span>
+					</h3>
+					<div class="editor-faq__answer">
+						<span class="editor-faq__mark">A</span><div class="editor-faq__body" set:html={cleanHtml(block.answer)} />
+					</div>
+				</section>
+			)}
+
+			{block.fieldId === "accordion" && (
+				<details class="editor-block editor-accordion">
+					<summary class="editor-accordion__summary">{block.title}</summary>
+					<div class="editor-accordion__body" set:html={cleanHtml(block.body)} />
+				</details>
+			)}
+
+			{block.fieldId === "stepList" && (
+				<section class="editor-block editor-step-list">
+					{block.title && <h3 class="editor-step-list__title">{block.title}</h3>}
+					<ol class="editor-steps">
+						{block.items.map((item) => (
+							<li class="editor-step">
+								<p class="editor-step__title">{item.title}</p>
+								<div class="editor-step__body" set:html={cleanHtml(item.body)} />
+							</li>
+						))}
+					</ol>
+				</section>
+			)}
+
+			{block.fieldId === "prosCons" && (
+				<section class="editor-block editor-pros-cons">
+					<h3 class="editor-pros-cons__title">{block.title ?? "良かった点・気になった点"}</h3>
+					<div class="editor-pros-cons__grid">
+						<section class="editor-pros-cons__section editor-pros">
+							<h4 class="editor-pros-cons__heading">良かった点</h4>
+							<ul>{block.pros.map((item) => <li>{item}</li>)}</ul>
+						</section>
+						<section class="editor-pros-cons__section editor-cons">
+							<h4 class="editor-pros-cons__heading">気になった点</h4>
+							<ul>{block.cons.map((item) => <li>{item}</li>)}</ul>
+						</section>
+					</div>
+				</section>
+			)}
+
+			{block.fieldId === "comparison" && (
+				<figure class="editor-block editor-comparison">
+					<figcaption class="editor-comparison__caption">{block.caption ?? "比較表"}</figcaption>
+					<div class="editor-comparison__scroll" tabindex="0">
+						<table>
+							<thead><tr>{block.headers.map((header) => <th scope="col">{header}</th>)}</tr></thead>
+							<tbody>{block.rows.map((row) => <tr>{row.map((cell, index) => index === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>)}</tr>)}</tbody>
+						</table>
+					</div>
+				</figure>
+			)}
+
+			{block.fieldId === "product" && (
+				<aside class="editor-block editor-product">
+					{block.image && safeMediaUrl(block.image.url) && (
+						<figure class="editor-product__media">
+							<img src={safeMediaUrl(block.image.url)} alt={block.image.alt ?? ""} loading="lazy" decoding="async" />
+						</figure>
+					)}
+					<div class="editor-product__body">
+						<p class="editor-product__eyebrow">紹介した製品</p>
+						<h3 class="editor-product__title">{block.name}</h3>
+						{block.summary && <p class="editor-product__summary">{block.summary}</p>}
+						<div class="editor-product__actions">
+							{block.links.map((link) => (
+								<a class="no-styling" href={safeUrl(link.url)} rel={link.type === "affiliate" ? "sponsored noopener" : "noopener"}>
+									{link.label}<span class="editor-product__action-icon" aria-hidden="true">↗</span>
+								</a>
+							))}
+						</div>
+						<small class="editor-product__disclosure">{block.disclosure ?? "リンクにはアフィリエイトを含む場合があります。"}</small>
+					</div>
+				</aside>
+			)}
+		</>
+	))}
+</div>

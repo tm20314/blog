@@ -1,5 +1,4 @@
-const adsenseClientId =
-	import.meta.env.PUBLIC_ADSENSE_CLIENT_ID?.trim() ?? "";
+const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID?.trim() ?? "";
 const isValidAdsenseClientId = /^ca-pub-\d+$/.test(adsenseClientId);
 
 export const prerender = true;

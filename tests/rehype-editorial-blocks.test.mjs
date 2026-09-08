@@ -4,7 +4,12 @@ import {
 	EditorialAccordionComponent,
 	EditorialBoxComponent,
 	EditorialButtonComponent,
+	EditorialComparisonComponent,
+	EditorialConsComponent,
 	EditorialFaqComponent,
+	EditorialProductComponent,
+	EditorialProsComponent,
+	EditorialProsConsComponent,
 	EditorialSpeechComponent,
 	EditorialStepComponent,
 	EditorialStepsComponent,
@@ -18,11 +23,42 @@ const paragraph = (value) => ({
 	children: [text(value)],
 });
 
-test("editorial box keeps its supported visual type and content", () => {
-	const block = EditorialBoxComponent(
-		{ type: "warning", title: "注意" },
-		[paragraph("バックアップを取ってください。")],
+test("review blocks expose product links and comparison semantics", () => {
+	const product = EditorialProductComponent(
+		{
+			name: "充電器",
+			amazon: "https://www.amazon.co.jp/dp/example",
+			official: "https://example.com/product",
+		},
+		[],
 	);
+	const pros = EditorialProsComponent({}, [paragraph("軽い")]);
+	const cons = EditorialConsComponent({}, [paragraph("高価")]);
+	const summary = EditorialProsConsComponent({}, [pros, cons]);
+	const comparison = EditorialComparisonComponent({}, [
+		{ type: "element", tagName: "table", properties: {}, children: [] },
+	]);
+
+	assert.equal(product.tagName, "aside");
+	const productBody = product.children.find((node) =>
+		node.properties?.className?.includes("editor-product__body"),
+	);
+	const productActions = productBody.children.find((node) =>
+		node.properties?.className?.includes("editor-product__actions"),
+	);
+	assert.deepEqual(productActions.children[0].properties.rel, [
+		"sponsored",
+		"noopener",
+	]);
+	assert.equal(summary.children[1].children.length, 2);
+	assert.equal(comparison.tagName, "figure");
+	assert.equal(comparison.children[1].properties.tabIndex, 0);
+});
+
+test("editorial box keeps its supported visual type and content", () => {
+	const block = EditorialBoxComponent({ type: "warning", title: "注意" }, [
+		paragraph("バックアップを取ってください。"),
+	]);
 
 	assert.equal(block.tagName, "aside");
 	assert.match(block.properties.className.join(" "), /editor-box--warning/u);
@@ -37,9 +73,15 @@ test("button rejects unsafe protocols", () => {
 });
 
 test("speech, FAQ, accordion and steps use semantic elements", () => {
-	const speech = EditorialSpeechComponent({ name: "つもつも" }, [paragraph("本文")]);
-	const faq = EditorialFaqComponent({ question: "無料ですか？" }, [paragraph("はい。")]);
-	const accordion = EditorialAccordionComponent({ title: "詳細" }, [paragraph("本文")]);
+	const speech = EditorialSpeechComponent({ name: "つもつも" }, [
+		paragraph("本文"),
+	]);
+	const faq = EditorialFaqComponent({ question: "無料ですか？" }, [
+		paragraph("はい。"),
+	]);
+	const accordion = EditorialAccordionComponent({ title: "詳細" }, [
+		paragraph("本文"),
+	]);
 	const step = EditorialStepComponent({ title: "準備" }, [paragraph("本文")]);
 	const steps = EditorialStepsComponent({}, [step]);
 

@@ -1,0 +1,42 @@
+---
+interface Props {
+	title: string;
+	url: string;
+}
+
+const { title, url } = Astro.props;
+const encodedTitle = encodeURIComponent(title);
+const encodedUrl = encodeURIComponent(url);
+const links = [
+	{
+		label: "X",
+		href: `https://x.com/intent/post?text=${encodedTitle}&url=${encodedUrl}`,
+	},
+	{
+		label: "Facebook",
+		href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+	},
+	{
+		label: "はてなブックマーク",
+		href: `https://b.hatena.ne.jp/add?mode=confirm&url=${encodedUrl}&title=${encodedTitle}`,
+	},
+	{
+		label: "LINE",
+		href: `https://social-plugins.line.me/lineit/share?url=${encodedUrl}`,
+	},
+];
+---
+
+<aside class="article-share" aria-labelledby="share-heading">
+	<div>
+		<h2 id="share-heading">この記事をシェア</h2>
+		<p>役に立ったら、同じことで困っている人へ。</p>
+	</div>
+	<nav aria-label="記事の共有先">
+		{links.map((link) => (
+			<a href={link.href} target="_blank" rel="noopener noreferrer">
+				{link.label}
+			</a>
+		))}
+	</nav>
+</aside>
