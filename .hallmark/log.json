@@ -5,6 +5,17 @@
 		"genre": "editorial + playful",
 		"macrostructure": "Photographic + Workbench section",
 		"theme": "studied-DNA (locked in design.md)",
+		"enrichment": "five user-supplied transparent phone mockups on one shared paper field",
+		"navigation": "N9 Edge-aligned minimal (unchanged)",
+		"footer": "Ft5 Statement (unchanged)",
+		"brief": "Normalize every app showcase to one device scale, background, and caption treatment while preserving each product's identity."
+	},
+	{
+		"date": "2026-09-09",
+		"scope": "section",
+		"genre": "editorial + playful",
+		"macrostructure": "Photographic + Workbench section",
+		"theme": "studied-DNA (locked in design.md)",
 		"enrichment": "real product captures and app icons from the supplied Figma work and official store listings",
 		"navigation": "N9 Edge-aligned minimal (unchanged)",
 		"footer": "Ft5 Statement (unchanged)",

@@ -1,13 +1,13 @@
 import kokorahenIcon from "@assets/images/projects/kokorahen-icon.jpg";
-import kokorahenScreen from "@assets/images/projects/kokorahen-screen.png";
+import kokorahenScreen from "@assets/images/projects/kokorahen-mock.png";
 import motoParkingIcon from "@assets/images/projects/motoparking-icon.jpg";
-import motoParkingScreen from "@assets/images/projects/motoparking-screen.jpg";
+import motoParkingScreen from "@assets/images/projects/motoparking-mock.png";
 import okariIcon from "@assets/images/projects/okari-icon.jpg";
-import okariScreen from "@assets/images/projects/okari-screen.png";
+import okariScreen from "@assets/images/projects/okari-mock.png";
 import step2TheMoonIcon from "@assets/images/projects/step2themoon-icon.jpg";
-import step2TheMoonScreen from "@assets/images/projects/step2themoon-screen.jpg";
+import step2TheMoonScreen from "@assets/images/projects/step2themoon-mock.png";
 import stepBeatIcon from "@assets/images/projects/stepbeat-icon.jpg";
-import stepBeatScreen from "@assets/images/projects/stepbeat-screen.jpg";
+import stepBeatScreen from "@assets/images/projects/stepbeat-mock.png";
 import type { ImageMetadata } from "astro";
 
 export type ProjectLink = {

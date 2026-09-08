@@ -2,7 +2,7 @@
  * theme: studied-DNA (source: https://tobalog.com/) · studied: yes · DNA-source: url
  * sources: https://tobalog.com/ · https://www.gizmodo.jp/ · https://gori.me/ · https://gadgetmitchy.com/
  * observed: paper=oklch(0.955 0 0) · body=DNP Shuei Gothic Gin/Yu Gothic · applied: paper=oklch(0.972 0.006 112) · accent=oklch(0.89 0.228 126)
- * type: Bricolage Grotesque Variable + Noto Sans JP Variable · enrichment: E8 existing photography · nav: N9 Edge-aligned minimal · footer: Ft5 Statement
+ * type: Bricolage Grotesque Variable + Noto Sans JP Variable · enrichment: editorial photography + transparent product mockups · nav: N9 Edge-aligned minimal · footer: Ft5 Statement
  * audience: app users, hiring teams, and indie developers · use: read the blog and evaluate released apps · tone: technical editorial + playful workbench · motion: none
  * contrast: pass (40–41) · slop: pass (1–58) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49)
  * icons: pass (30) · mobile: pass (34, 49, 50–57)
@@ -494,7 +494,7 @@ a {
   color: var(--color-accent);
 }
 
-/* Hallmark · works substructure: Workbench · tone: playful editorial · enrichment: real product captures */
+/* Hallmark · works substructure: Workbench · tone: playful editorial · enrichment: transparent product mockups */
 .works {
   display: grid;
   gap: var(--space-2xl);
@@ -565,24 +565,26 @@ a {
 .project__visual {
   position: relative;
   display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   min-width: var(--space-0);
   min-height: 28rem;
+  gap: var(--space-md);
   place-items: center;
   overflow: hidden;
+  padding: var(--space-lg) var(--space-md) var(--space-md);
   background: var(--color-paper-2);
 }
 
 .project__screen {
-  width: 100%;
-  height: min(36rem, 128vw);
+  width: auto;
+  height: min(25rem, 112vw);
+  max-width: 68%;
   object-fit: contain;
 }
 
 .project__visual figcaption {
-  position: absolute;
-  inset-block-end: var(--space-md);
-  inset-inline: var(--space-md);
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
@@ -958,7 +960,8 @@ a {
   }
 
   .project__screen {
-    height: 36rem;
+    height: 30rem;
+    max-width: 72%;
   }
 
   .author-panel__portrait {
