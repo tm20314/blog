@@ -262,7 +262,11 @@ export function normalizeMicroCMSArticle(
 		.map(normalizeBlock)
 		.filter((block): block is EditorialBlock => block !== null);
 	const content = asString(article.content);
-	if (content) blocks.unshift({ fieldId: "richText", body: content });
+	const usesOrderedBody = blocks.some(
+		(block) => block.fieldId === "richText" && Boolean(block.body.trim()),
+	);
+	if (content && !usesOrderedBody)
+		blocks.unshift({ fieldId: "richText", body: content });
 
 	return {
 		...article,

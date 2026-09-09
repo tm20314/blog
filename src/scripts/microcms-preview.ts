@@ -629,13 +629,18 @@ export async function initMicroCMSPreview() {
 		cover.alt = coverValue ? `${title}のアイキャッチ画像` : "";
 
 		body.replaceChildren();
-		if (asText(payload.content)) {
+		const rawBlocks = (payload.blocks ?? []).map(asRecord);
+		const usesOrderedBody = rawBlocks.some(
+			(block) =>
+				asText(block.fieldId) === "richText" && Boolean(asText(block.body)),
+		);
+		if (asText(payload.content) && !usesOrderedBody) {
 			const content = make("div", "structured-article__rich-text");
 			content.innerHTML = sanitizeRichText(payload.content);
 			body.append(content);
 		}
-		for (const rawBlock of payload.blocks ?? []) {
-			const block = renderBlock(asRecord(rawBlock));
+		for (const rawBlock of rawBlocks) {
+			const block = renderBlock(rawBlock);
 			if (block) body.append(block);
 		}
 		if (!body.textContent?.trim() && !body.querySelector("img")) {

@@ -118,6 +118,36 @@ test("microCMSの記事と編集用ブロックを表示形式へ変換する", 
 	});
 });
 
+test("本文ブロックがある場合は並び順を優先して旧本文を重ねない", () => {
+	const article = normalizeMicroCMSArticle({
+		id: "ordered",
+		createdAt: "2026-09-09T00:00:00.000Z",
+		updatedAt: "2026-09-09T01:00:00.000Z",
+		title: "並べ替え記事",
+		slug: "ordered-body",
+		content: "<p>旧本文</p>",
+		blocks: [
+			{ fieldId: "richText", body: "<p>前半</p>" },
+			{
+				fieldId: "box",
+				tone: "point",
+				title: "要点",
+				body: "<p>囲みの内容</p>",
+			},
+			{ fieldId: "richText", body: "<p>後半</p>" },
+		],
+	});
+
+	assert.ok(article);
+	assert.deepEqual(
+		article.blocks.map((block) => block.fieldId),
+		["richText", "box", "richText"],
+	);
+	assert.equal(article.blocks[0].fieldId, "richText");
+	if (article.blocks[0].fieldId === "richText")
+		assert.equal(article.blocks[0].body, "<p>前半</p>");
+});
+
 test("slugが空の記事は公開一覧へ渡さない", () => {
 	assert.equal(
 		normalizeMicroCMSArticle({
