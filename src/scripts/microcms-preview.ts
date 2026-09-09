@@ -69,6 +69,8 @@ function sanitizeRichText(html: unknown) {
 		"P",
 		"PRE",
 		"S",
+		// microCMS wraps custom classes in span elements.
+		"SPAN",
 		"STRONG",
 		"TABLE",
 		"TBODY",
