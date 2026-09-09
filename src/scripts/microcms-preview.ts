@@ -1,4 +1,5 @@
 import { getSafeEmbed } from "@utils/embed-utils";
+import { filterCMSRichTextClasses } from "@utils/cms-rich-text";
 import type { MicroCMSArticle } from "@/types/editorial-blocks";
 
 type RawBlock = Record<string, unknown>;
@@ -96,6 +97,10 @@ function sanitizeRichText(html: unknown) {
 			"data-preview-rowspan",
 			element.getAttribute("rowspan") ?? "",
 		);
+		element.setAttribute(
+			"data-preview-class",
+			element.getAttribute("class") ?? "",
+		);
 	}
 
 	const finish = (element: Element) => {
@@ -113,8 +118,12 @@ function sanitizeRichText(html: unknown) {
 		const alt = element.getAttribute("data-preview-alt");
 		const colspan = element.getAttribute("data-preview-colspan");
 		const rowspan = element.getAttribute("data-preview-rowspan");
+		const classNames = filterCMSRichTextClasses(
+			element.getAttribute("data-preview-class"),
+		);
 		for (const attribute of [...element.attributes])
 			element.removeAttribute(attribute.name);
+		if (classNames.length) element.classList.add(...classNames);
 
 		if (element instanceof HTMLAnchorElement) {
 			const hrefValue = safeUrl(href);

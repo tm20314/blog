@@ -151,8 +151,10 @@ Markdown用の記法とmicroCMS用の入力欄は別ですが、最終的には�
 
 `src/components/editorial/StructuredArticleBody.astro` がこのデータを安全に表示し、FAQがある記事ではFAQ構造化データも出力します。`src/lib/microcms.ts` はサーバー側から記事を取得する準備です。既存Markdown記事は残したまま、新しい記事だけmicroCMSから取得できます。
 
-## 文章の途中へ装飾を入れる
+## 文章の途中へ装飾を入れる（推奨）
 
-microCMSの「記事本文」では、本文も `richText` ブロックとして扱います。「本文 → 囲み → 本文 → 比較表 → 本文」のようにフィールドを追加し、ドラッグ操作で並べ替えてください。記事本文に `richText` がある場合、互換用の「かんたん本文」は表示されません。
+microCMSの「記事本文」リッチエディタで文章を選択し、ツールバーの「カスタム」から装飾を適用します。マーカー2種、囲み4種、ボタン2種、吹き出し2種、FAQの質問・回答を選べます。表とSNS・動画・一般URLはリッチエディタ標準のテーブル／埋め込み機能を使います。
+
+商品画像やAmazon・楽天・公式URLをまとめて管理する商品紹介など、複数の入力欄が必要な場合だけ「高度なブロック」を使います。以前の「本文とブロックを分割して並べる」方式も既存データとの互換用に残しています。
 
 接続にはCloudflare Pagesへ `MICROCMS_SERVICE_DOMAIN` と `MICROCMS_API_KEY` を登録します。APIキーは公開用の `PUBLIC_` を付けません。公開・更新時に自動再ビルドするWebhookもmicroCMSからCloudflare Pagesへ設定します。詳細は `docs/microcms-setup.md` を参照してください。

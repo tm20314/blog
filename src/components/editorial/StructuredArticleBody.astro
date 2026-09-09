@@ -1,5 +1,6 @@
 ---
 import { getSafeEmbed } from "@utils/embed-utils";
+import { CMS_RICH_TEXT_CLASSES } from "@utils/cms-rich-text";
 import sanitizeHtml from "sanitize-html";
 import type { EditorialBlock } from "@/types/editorial-blocks";
 
@@ -24,6 +25,9 @@ const cleanHtml = (html: string) =>
 			"*": ["class"],
 			a: ["href", "target", "rel", "class"],
 			img: ["src", "alt", "width", "height", "loading", "decoding"],
+		},
+		allowedClasses: {
+			"*": [...CMS_RICH_TEXT_CLASSES],
 		},
 		allowedSchemes: ["http", "https", "mailto"],
 		transformTags: {

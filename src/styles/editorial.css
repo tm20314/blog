@@ -1451,6 +1451,191 @@ a {
   font-weight: 800;
 }
 
+/* Inline decorations selected from microCMS rich editor's custom-class menu. */
+.editorial-prose .cms-marker-yellow,
+.editorial-prose .cms-marker-green {
+  padding-inline: 0.08em;
+  font-weight: 750;
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% 0.48em;
+}
+
+.editorial-prose .cms-marker-yellow {
+  background-image: linear-gradient(transparent, oklch(0.9 0.18 96 / 0.7));
+}
+
+.editorial-prose .cms-marker-green {
+  background-image: linear-gradient(transparent, oklch(0.89 0.2 126 / 0.55));
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-box-note),
+.editorial-prose .structured-article__rich-text p:has(.cms-box-point),
+.editorial-prose .structured-article__rich-text p:has(.cms-box-check),
+.editorial-prose .structured-article__rich-text p:has(.cms-box-warning) {
+  padding: var(--space-md) var(--space-lg);
+  border: var(--rule-hair) solid var(--color-rule-dark);
+  border-inline-start-width: var(--space-xs);
+  background: var(--color-paper-2);
+  color: var(--color-ink-2);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-box-note) {
+  border-inline-start-color: var(--color-muted);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-box-point),
+.editorial-prose .structured-article__rich-text p:has(.cms-box-check) {
+  border-inline-start-color: var(--color-focus);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-box-warning) {
+  border-inline-start-color: oklch(0.62 0.2 32);
+  background: oklch(0.96 0.025 32);
+}
+
+.editorial-prose .cms-box-note,
+.editorial-prose .cms-box-point,
+.editorial-prose .cms-box-check,
+.editorial-prose .cms-box-warning {
+  display: contents;
+}
+
+.editorial-prose a:has(.cms-button-primary),
+.editorial-prose a:has(.cms-button-secondary),
+.editorial-prose .cms-button-primary:has(a),
+.editorial-prose .cms-button-secondary:has(a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-min);
+  margin-block: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  border: var(--rule-strong) solid var(--color-ink);
+  font-weight: 800;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.editorial-prose a:has(.cms-button-primary),
+.editorial-prose .cms-button-primary:has(a) {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.editorial-prose a:has(.cms-button-secondary),
+.editorial-prose .cms-button-secondary:has(a) {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.editorial-prose a:has(.cms-button-primary)::after,
+.editorial-prose a:has(.cms-button-secondary)::after {
+  content: "↗";
+  margin-inline-start: var(--space-md);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-left),
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-right) {
+  position: relative;
+  min-height: 4rem;
+  padding: var(--space-md) var(--space-lg);
+  border: var(--rule-hair) solid var(--color-rule-dark);
+  background: var(--color-paper-2);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-left) {
+  margin-inline-start: 4.5rem;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-right) {
+  margin-inline-end: 4.5rem;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-left)::before,
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-right)::after {
+  position: absolute;
+  inset-block-start: 0;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--color-ink);
+  color: var(--color-accent);
+  content: "つ";
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-left)::before {
+  inset-inline-start: -4.5rem;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-speech-right)::after {
+  inset-inline-end: -4.5rem;
+}
+
+.editorial-prose .cms-speech-left,
+.editorial-prose .cms-speech-right,
+.editorial-prose .cms-faq-question,
+.editorial-prose .cms-faq-answer {
+  display: contents;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-question),
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-answer) {
+  position: relative;
+  margin-block: var(--space-0);
+  padding: var(--space-md) var(--space-md) var(--space-md) 3.5rem;
+  border-inline: var(--rule-strong) solid var(--color-ink);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-question) {
+  border-block-start: var(--rule-strong) solid var(--color-ink);
+  background: var(--color-paper-2);
+  font-weight: 800;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-answer) {
+  border-block-end: var(--rule-strong) solid var(--color-ink);
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-question)::before,
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-answer)::before {
+  position: absolute;
+  inset-block-start: var(--space-md);
+  inset-inline-start: var(--space-md);
+  color: var(--color-focus);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 800;
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-question)::before {
+  content: "Q";
+}
+
+.editorial-prose .structured-article__rich-text p:has(.cms-faq-answer)::before {
+  content: "A";
+}
+
+@media (max-width: 39.99rem) {
+  .editorial-prose .structured-article__rich-text p:has(.cms-speech-left),
+  .editorial-prose .structured-article__rich-text p:has(.cms-speech-right) {
+    margin-inline-start: var(--space-0);
+    margin-inline-end: var(--space-0);
+    padding-block-start: 4.5rem;
+  }
+
+  .editorial-prose .structured-article__rich-text p:has(.cms-speech-left)::before,
+  .editorial-prose .structured-article__rich-text p:has(.cms-speech-right)::after {
+    inset-block-start: var(--space-sm);
+    inset-inline-start: var(--space-md);
+    inset-inline-end: auto;
+  }
+}
+
 /* Portable editorial blocks: Markdown directives today, CMS blocks later. */
 .editorial-prose .editor-block {
   margin-block: var(--space-0) var(--space-xl);
