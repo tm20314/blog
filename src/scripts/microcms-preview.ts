@@ -2,6 +2,7 @@ import { filterCMSRichTextClasses } from "@utils/cms-rich-text";
 import { getSafeEmbed } from "@utils/embed-utils";
 import { publication } from "@/config/site";
 import type { MicroCMSArticle } from "@/types/editorial-blocks";
+import { selectCMSBody } from "../utils/cms-body";
 import { initEditorialTabs } from "./editor-tabs";
 
 type RawBlock = Record<string, unknown>;
@@ -47,7 +48,7 @@ function safeUrl(value: unknown, media = false) {
 	}
 }
 
-function sanitizeRichText(html: unknown) {
+export function sanitizeRichText(html: unknown) {
 	const documentFragment = new DOMParser().parseFromString(
 		asText(html),
 		"text/html",
@@ -169,7 +170,7 @@ function appendRich(parent: HTMLElement, html: unknown, className?: string) {
 	return body;
 }
 
-function renderBlock(block: RawBlock) {
+export function renderBlock(block: RawBlock) {
 	const fieldId = asText(block.fieldId);
 	if (fieldId === "richText") {
 		const node = make("div", "structured-article__rich-text");
@@ -639,18 +640,7 @@ export async function initMicroCMSPreview() {
 			cover.alt = coverValue ? `${title}のアイキャッチ画像` : "";
 
 			body.replaceChildren();
-			const rawBlocks = (
-				Array.isArray(payload.blocks) ? payload.blocks : []
-			).map(asRecord);
-			const usesOrderedBody = rawBlocks.some(
-				(block) =>
-					asText(block.fieldId) === "richText" && Boolean(asText(block.body)),
-			);
-			if (asText(payload.content) && !usesOrderedBody) {
-				const content = make("div", "structured-article__rich-text");
-				content.innerHTML = sanitizeRichText(payload.content);
-				body.append(content);
-			}
+			const rawBlocks = selectCMSBody(payload);
 			for (const rawBlock of rawBlocks) {
 				const block = renderBlock(rawBlock);
 				if (block) body.append(block);

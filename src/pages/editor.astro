@@ -1,0 +1,103 @@
+---
+import "../../tokens.css";
+import "../styles/editorial.css";
+import "../styles/live-editor.css";
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
+    <title>本文エディター | つもログ</title>
+  </head>
+  <body class="live-editor-page">
+    <main class="live-editor" data-live-editor>
+      <header>
+        <h1>本文とプレビュー</h1>
+        <p>入力すると右側の本文表示に反映されます。保存・公開はmicroCMS側で行ってください。</p>
+        <p role="status" data-connection>microCMSとの接続を待っています…</p>
+        <label class="live-editor__enable"><input type="checkbox" data-enabled disabled /> この編集欄を記事の本文に使う</label>
+        <p>オフの間は従来の本文・高度なブロックを表示します。オンにする前に、必要な本文がすべて入っていることを確認してください。従来のデータは削除しません。</p>
+      </header>
+      <fieldset data-controls disabled>
+        <legend class="sr-only">本文の編集</legend>
+        <div class="live-editor__toolbar" aria-label="文字と段落の書式">
+          <button type="button" data-command="bold">太字</button>
+          <button type="button" data-command="italic">斜体</button>
+          <button type="button" data-command="h2">見出し2</button>
+          <button type="button" data-command="h3">見出し3</button>
+          <button type="button" data-command="bullet">箇条書き</button>
+          <button type="button" data-command="quote">引用</button>
+          <button type="button" data-command="undo">元に戻す</button>
+          <button type="button" data-command="redo">やり直す</button>
+          <label>選択した文字の装飾
+            <select data-decoration>
+              <option value="">装飾を解除</option>
+              <option value="cms-marker-yellow">マーカー</option>
+              <option value="cms-box-note">補足の囲み</option>
+              <option value="cms-box-point">ポイントの囲み</option>
+              <option value="cms-box-warning">注意の囲み</option>
+              <option value="cms-speech-left">吹き出し</option>
+              <option value="cms-faq-question">FAQの質問</option>
+              <option value="cms-faq-answer">FAQの回答</option>
+              <option value="cms-button-primary">リンクをボタン表示</option>
+            </select>
+          </label>
+        </div>
+        <details class="live-editor__insert">
+          <summary>リンク・画像・表を挿入</summary>
+          <form data-link-form>
+            <label>リンク先URL<input name="url" type="url" required placeholder="https://…" /></label>
+            <button type="submit">選択した文字にリンク</button>
+          </form>
+          <form data-image-form>
+            <label>画像URL<input name="url" type="url" required placeholder="microCMSのメディアURLなど" /></label>
+            <label>画像の説明<input name="alt" required /></label>
+            <button type="submit">画像を挿入</button>
+          </form>
+          <button type="button" data-command="table">3列の表を挿入</button>
+          <button type="button" data-command="row">表の行を追加</button>
+          <button type="button" data-command="column">表の列を追加</button>
+        </details>
+        <details class="live-editor__insert" data-product-panel>
+          <summary>商品ボックスを挿入・編集</summary>
+          <p>本文の挿入位置をクリックしてから入力してください。挿入済みのボックスを選択すると編集できます。</p>
+          <form data-product-form>
+            <label>商品名<input name="name" required /></label>
+            <label>説明<textarea name="summary" rows="2"></textarea></label>
+            <label>AmazonのURL<input name="amazonUrl" type="url" placeholder="https://amzn.to/… または商品ページURL" /></label>
+            <label>楽天のURL<input name="rakutenUrl" type="url" /></label>
+            <label>公式サイトのURL<input name="officialUrl" type="url" /></label>
+            <label>商品画像URL（任意）<input name="imageUrl" type="url" /></label>
+            <p>Amazon画像の自動取得は未接続です。当面は自分で撮影した写真など、利用できる画像のURLを入力してください。</p>
+            <button type="submit" data-product-submit>カーソル位置に挿入</button>
+            <p data-product-error role="alert"></p>
+          </form>
+        </details>
+      </fieldset>
+      <label class="live-editor__view-label">表示
+        <select data-view>
+          <option value="both">編集とプレビュー</option>
+          <option value="edit">編集のみ</option>
+          <option value="preview">プレビューのみ</option>
+        </select>
+      </label>
+      <div class="live-editor__panes" data-panes data-view="both">
+        <section data-edit-pane aria-label="本文を編集">
+          <h2>本文</h2>
+          <div class="editorial-prose structured-article"><div class="structured-article__rich-text" data-editor></div></div>
+        </section>
+        <section data-preview-pane aria-label="入力中の本文プレビュー">
+          <h2>プレビュー</h2>
+          <div class="editorial-prose structured-article" data-live-preview></div>
+        </section>
+      </div>
+    </main>
+    <script>
+      import { initLiveEditor } from "../scripts/live-editor";
+      initLiveEditor();
+    </script>
+  </body>
+</html>

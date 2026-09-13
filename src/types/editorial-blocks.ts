@@ -152,6 +152,7 @@ export type MicroCMSArticle = {
 	slug?: string;
 	description?: string;
 	content?: string;
+	liveBody?: unknown;
 	eyecatch?: MicroCMSImage;
 	cover?: MicroCMSImage;
 	category?: string | MicroCMSCategory;

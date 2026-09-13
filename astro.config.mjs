@@ -118,7 +118,7 @@ export default defineConfig({
 		}),
 		svelte(),
 		sitemap({
-			filter: (page) => !/^\/(?:preview|\d+)\/?$/.test(new URL(page).pathname),
+			filter: (page) => !/^\/(?:preview|editor|\d+)\/?$/.test(new URL(page).pathname),
 		}),
 	],
 	markdown: {

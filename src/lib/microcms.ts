@@ -4,6 +4,7 @@ import type {
 	MicroCMSListResponse,
 	NormalizedMicroCMSArticle,
 } from "@/types/editorial-blocks";
+import { selectCMSBody } from "../utils/cms-body";
 import { fetchMicroCMSJson } from "./microcms-request.mjs";
 
 const env = import.meta.env ?? {};
@@ -281,16 +282,9 @@ export function normalizeMicroCMSArticle(
 	if (!slug || !/^[\p{L}\p{N}_-]+(?:\/[\p{L}\p{N}_-]+)*$/u.test(slug))
 		return null;
 
-	const blocks = (Array.isArray(article.blocks) ? article.blocks : [])
-		.filter((block) => block && typeof block === "object")
+	const blocks = selectCMSBody(article)
 		.map(normalizeBlock)
 		.filter((block): block is EditorialBlock => block !== null);
-	const content = asString(article.content);
-	const usesOrderedBody = blocks.some(
-		(block) => block.fieldId === "richText" && Boolean(block.body.trim()),
-	);
-	if (content && !usesOrderedBody)
-		blocks.unshift({ fieldId: "richText", body: content });
 
 	return {
 		...article,
