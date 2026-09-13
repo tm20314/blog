@@ -220,7 +220,7 @@ export function initLiveEditor() {
 			initialized = true;
 			controls.disabled = false;
 			enabled.disabled = false;
-			editor.setEditable(true);
+			editor.setEditable(true, false);
 			status.textContent = "接続しました。入力中の本文をプレビューできます。";
 			render();
 			window.parent.postMessage(
@@ -244,7 +244,7 @@ export function initLiveEditor() {
 		initialized = true;
 		controls.disabled = false;
 		enabled.disabled = false;
-		editor.setEditable(true);
+		editor.setEditable(true, false);
 		status.textContent =
 			"お試しモード：変更は保存されません。実際の執筆はmicroCMSの拡張フィールドから開いてください。";
 		render();
