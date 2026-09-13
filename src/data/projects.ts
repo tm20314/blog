@@ -44,9 +44,9 @@ export const projects: Project[] = [
 		name: "岡理アプリ",
 		kicker: "Campus utility",
 		visualTone: "okari",
-		tagline: "大学生活の「どこだっけ」を、ひとつに。",
+		tagline: "講義もバスも、大学の情報をまとめて確認。",
 		description:
-			"講義検索、大学ニュース、バス運行情報などをまとめた岡山理科大学の非公式アプリ。学生として感じた不便から企画し、公開後の改善まで個人で続けています。",
+			"岡山理科大学の非公式アプリです。学生のときに不便だと感じたことをきっかけに作りました。講義検索や大学のニュース、バスの運行情報をまとめています。",
 		proof: "利用者1,000人超",
 		stack: ["Flutter", "Firebase", "Product design"],
 		icon: okariIcon,
@@ -74,7 +74,7 @@ export const projects: Project[] = [
 		visualTone: "kokorahen",
 		tagline: "開いたら、すぐ近くのお店が見つかる。",
 		description:
-			"現在地の周辺にある飲食店や観光スポットを、余計な操作なしで探せるアプリ。距離とジャンルで絞り込み、行き先選びを軽くします。",
+			"近くの飲食店や観光スポットを、距離やジャンルで絞り込めます。カフェや公園など、行きたい場所を現在地から探せるアプリです。",
 		proof: "iPhone・iPad対応",
 		stack: ["iOS", "Location", "Product design"],
 		icon: kokorahenIcon,
@@ -94,7 +94,7 @@ export const projects: Project[] = [
 		visualTone: "stepbeat",
 		tagline: "歩く速さに、音楽のテンポを合わせる。",
 		description:
-			"歩行ペースを測り、そのテンポに合う曲をApple Musicから再生するウォーキングアプリ。歩数とワークアウトの記録にも対応しています。",
+			"歩くペースを測って、テンポの合う曲をApple Musicから再生します。歩数やワークアウトも記録できるウォーキングアプリです。",
 		proof: "歩速×Apple Music",
 		stack: ["iOS", "Apple Music", "Health"],
 		icon: stepBeatIcon,
@@ -114,7 +114,7 @@ export const projects: Project[] = [
 		visualTone: "step2themoon",
 		tagline: "今日までの歩数は、世界のどこまで届いた？",
 		description:
-			"毎日の歩数を距離に変え、地球一周や月までの道のりと比べる歩数計。運動量ではなく、自分が積み重ねた軌跡を眺めるためのアプリです。",
+			"これまでの歩数を距離に換算する歩数計です。世界の都市や月まであと何kmか、地球一周までどれくらいかを確認できます。",
 		proof: "累計歩数を距離に変換",
 		stack: ["iOS", "Health", "Data visualization"],
 		icon: step2TheMoonIcon,
@@ -132,9 +132,9 @@ export const projects: Project[] = [
 		name: "MotoParking",
 		kicker: "Motorcycle utility",
 		visualTone: "motoparking",
-		tagline: "バイクを停められる場所だけ、サクッと探す。",
+		tagline: "近くのバイク駐車場を、地図で探す。",
 		description:
-			"現在地付近の二輪車向け駐車場を一括で検索できるアプリ。排気量などの条件を確認でき、ユーザー同士で新しい駐車場情報も共有できます。",
+			"現在地の近くにあるバイク駐車場を地図で探せます。停められるバイクの排気量などを確認でき、新しく見つけた駐車場の情報も投稿できます。",
 		proof: "ユーザー投稿に対応",
 		stack: ["Mobile", "Maps", "Community data"],
 		icon: motoParkingIcon,
@@ -149,7 +149,7 @@ export const projects: Project[] = [
 		],
 		story: {
 			href: "/posts/motoparking-privacy-policy/",
-			label: "運用ポリシーを見る",
+			label: "プライバシーポリシーを見る",
 		},
 	},
 ];

@@ -37,15 +37,15 @@ const categoryName = (category: string | null | undefined) =>
 
 <EditorialLayout
 	title="記事一覧"
-	description="つもログに掲載したガジェット、個人開発、技術記事を年別・カテゴリ別に探せる記事一覧です。"
+	description="つもログの記事一覧。ガジェットや個人開発の記事を、カテゴリやタグで絞り込めます。"
 >
 	<main id="main-content" class="content-page archive-page">
 		<header class="page-intro">
 			<div class="page-intro__title">
 				<p class="page-intro__index">Archive / {sortedPosts.length} stories</p>
-				<h1>書いたもの、<br />全部。</h1>
+				<h1>記事一覧</h1>
 			</div>
-			<p>ガジェットの使用記録、個人開発の試行錯誤、現場で覚えた技術。公開した記事を新しい順にまとめています。</p>
+			<p>これまでの記事を新しい順に並べています。カテゴリやタグからも探せます。</p>
 		</header>
 
 		<section class="archive-filters" aria-labelledby="filter-heading">

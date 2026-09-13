@@ -24,9 +24,9 @@ const { Content } = await render(aboutPost);
 		<header class="page-intro page-intro--about">
 			<div class="page-intro__title">
 				<p class="page-intro__index">About / Developer & Writer</p>
-				<h1>道具が好きで、<br />アプリも作る。</h1>
+				<h1>TumoTumoの<br />プロフィール</h1>
 			</div>
-			<p>使って気づいたことと、作って学んだことを、自分の言葉で残しています。</p>
+			<p>つもログを書いているTumoTumoです。ガジェットの話と、自分で作ったアプリを紹介しています。</p>
 		</header>
 
 		<section class="profile-sheet" aria-labelledby="profile-heading">
@@ -43,7 +43,7 @@ const { Content } = await render(aboutPost);
 			<div class="profile-sheet__body">
 				<p class="profile-sheet__role">Independent developer / Japan</p>
 				<h2 id="profile-heading">{profileConfig.name}</h2>
-				<p class="profile-sheet__lead">モバイルアプリを中心に個人開発するエンジニア。PC、スマホ、バイクなど、生活と開発を少し良くする道具が好きです。</p>
+				<p class="profile-sheet__lead">PCやスマホ、バイクが好きなエンジニアです。岡理アプリなどのモバイルアプリを個人で開発しています。</p>
 				<Markdown class="about-original">
 					<Content />
 				</Markdown>
@@ -57,29 +57,24 @@ const { Content } = await render(aboutPost);
 
 		<section class="about-principles" aria-labelledby="principles-heading">
 			<header>
-				<h2 id="principles-heading">このサイトで<br />残したいこと。</h2>
+				<h2 id="principles-heading">ブログに<br />書くこと</h2>
 			</header>
 			<div class="about-principles__list">
 				<article>
 					<span>01</span>
 					<h3>実際に使った感想</h3>
-					<p>スペック表だけでは分からない、日々の使い心地や気になった点を率直に書きます。</p>
+					<p>PCやスマホ、バイク用品を使ってみて、便利だったところや気になったところを書きます。</p>
 				</article>
 				<article>
 					<span>02</span>
 					<h3>個人開発の過程</h3>
-					<p>完成品だけでなく、設計や技術選定、失敗から学んだことまで記録します。</p>
-				</article>
-				<article>
-					<span>03</span>
-					<h3>次に役立つ情報</h3>
-					<p>同じ道具や技術を選ぶ人が、判断材料として使える記事を目指します。</p>
+					<p>Flutterを選んだ理由、審査で困ったこと、公開後に直したこと。アプリを作る中で経験したことを残しています。</p>
 				</article>
 			</div>
 		</section>
 
 		<section class="about-cta" aria-labelledby="about-cta-heading">
-			<h2 id="about-cta-heading">まずは、最近の記事から。</h2>
+			<h2 id="about-cta-heading">最近の記事</h2>
 			<a href={url("/#journal")}>ブログを読む <span aria-hidden="true">↘</span></a>
 		</section>
 	</main>

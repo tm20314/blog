@@ -5,7 +5,7 @@ export const publication = {
 	origin: "https://tumolog.com",
 	tagline: "Gadgets × Indie apps",
 	description:
-		"PC・スマホ・バイク周辺のガジェットと、個人開発したアプリの記録を届けるブログ。",
+		"TumoTumoの個人ブログ。PCやスマホ、バイク用品の話と、自分で作ったアプリや開発中に試したことを書いています。",
 	author: "TumoTumo",
 	defaultImage: "/images/default-thumbnail.png",
 	navigation: [
