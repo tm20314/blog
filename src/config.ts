@@ -1,3 +1,4 @@
+import { publication } from "./config/site";
 import type {
 	ExpressiveCodeConfig,
 	LicenseConfig,
@@ -6,7 +7,6 @@ import type {
 	SiteConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
-import { publication } from "./config/site";
 
 export const siteConfig: SiteConfig = {
 	title: publication.name,

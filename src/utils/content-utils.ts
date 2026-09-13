@@ -110,7 +110,8 @@ let buildPosts: Promise<ArticleEntry[]> | undefined;
 function getRawSortedPosts() {
 	// Reuse one consistent snapshot across routes during a build; dev stays fresh.
 	if (!import.meta.env.PROD) return loadSortedPosts();
-	return (buildPosts ??= loadSortedPosts());
+	buildPosts ??= loadSortedPosts();
+	return buildPosts;
 }
 
 async function loadSortedPosts() {

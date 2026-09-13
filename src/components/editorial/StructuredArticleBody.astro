@@ -1,9 +1,9 @@
 ---
-import { getSafeEmbed } from "@utils/embed-utils";
 import { CMS_RICH_TEXT_CLASSES } from "@utils/cms-rich-text";
+import { getSafeEmbed } from "@utils/embed-utils";
 import sanitizeHtml from "sanitize-html";
-import { serializeJsonLd } from "@/utils/structured-data";
 import type { EditorialBlock } from "@/types/editorial-blocks";
+import { serializeJsonLd } from "@/utils/structured-data";
 
 interface Props {
 	blocks: EditorialBlock[];
@@ -35,7 +35,12 @@ const cleanHtml = (html: string) =>
 			h1: "h2",
 			img: (_tagName, attribs) => ({
 				tagName: "img",
-				attribs: { ...attribs, loading: "lazy", decoding: "async", alt: attribs.alt ?? "" },
+				attribs: {
+					...attribs,
+					loading: "lazy",
+					decoding: "async",
+					alt: attribs.alt ?? "",
+				},
 			}),
 			a: (_tagName, attribs) => ({
 				tagName: "a",

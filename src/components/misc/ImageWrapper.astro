@@ -1,7 +1,7 @@
 ---
 import path from "node:path";
-import defaultThumbnail from "../../../public/images/default-thumbnail.png";
 import { publication } from "@/config/site";
+import defaultThumbnail from "../../../public/images/default-thumbnail.png";
 
 interface Props {
 	id?: string;
@@ -18,7 +18,16 @@ interface Props {
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/", loading = "lazy", fetchpriority = "auto", sizes = "(min-width: 60rem) 50vw, 100vw" } = Astro.props;
+const {
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "/",
+	loading = "lazy",
+	fetchpriority = "auto",
+	sizes = "(min-width: 60rem) 50vw, 100vw",
+} = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -34,9 +43,12 @@ const isPublic = src.startsWith("/");
 // biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
 let img = src === publication.defaultImage ? defaultThumbnail : undefined;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>("../../**/*.{jpg,jpeg,png,webp,avif,gif,svg}", {
-		import: "default",
-	});
+	const files = import.meta.glob<ImageMetadata>(
+		"../../**/*.{jpg,jpeg,png,webp,avif,gif,svg}",
+		{
+			import: "default",
+		},
+	);
 	let normalizedPath = path
 		.normalize(path.join("../../", basePath, src))
 		.replace(/\\/g, "/");
@@ -50,7 +62,9 @@ if (isLocal) {
 }
 
 // Resize only the trusted microCMS image CDN; other remote URLs stay intact.
-const remoteUrl = /^https:\/\/images\.microcms-assets\.io\//.test(src) ? new URL(src) : undefined;
+const remoteUrl = /^https:\/\/images\.microcms-assets\.io\//.test(src)
+	? new URL(src)
+	: undefined;
 const remoteWidth = (width: number) => {
 	const resized = new URL(remoteUrl!);
 	resized.searchParams.set("w", String(width));
@@ -58,7 +72,11 @@ const remoteWidth = (width: number) => {
 	resized.searchParams.set("auto", "compress,format");
 	return resized.href;
 };
-const remoteSrcset = remoteUrl ? [480, 800, 1200].map((width) => `${remoteWidth(width)} ${width}w`).join(", ") : undefined;
+const remoteSrcset = remoteUrl
+	? [480, 800, 1200]
+			.map((width) => `${remoteWidth(width)} ${width}w`)
+			.join(", ")
+	: undefined;
 
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;

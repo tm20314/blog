@@ -1,10 +1,10 @@
 ---
 import path from "node:path";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
-import { publication } from "@/config/site";
 import type { ArticleEntry, PostForList } from "@utils/content-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { getCategoryUrl, getDir, getPostUrlBySlug } from "@utils/url-utils";
+import { publication } from "@/config/site";
 
 interface Props {
 	post: ArticleEntry | PostForList;

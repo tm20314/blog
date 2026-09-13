@@ -1,7 +1,7 @@
-import { getSafeEmbed } from "@utils/embed-utils";
 import { filterCMSRichTextClasses } from "@utils/cms-rich-text";
-import type { MicroCMSArticle } from "@/types/editorial-blocks";
+import { getSafeEmbed } from "@utils/embed-utils";
 import { publication } from "@/config/site";
+import type { MicroCMSArticle } from "@/types/editorial-blocks";
 import { initEditorialTabs } from "./editor-tabs";
 
 type RawBlock = Record<string, unknown>;

@@ -1,9 +1,13 @@
 ---
 import { Image } from "astro:assets";
-import type { Project } from "@/data/projects";
 import { url } from "@utils/url-utils";
+import type { Project } from "@/data/projects";
 
-interface Props { project: Project; index: number; total: number; }
+interface Props {
+	project: Project;
+	index: number;
+	total: number;
+}
 const { project, index, total } = Astro.props;
 ---
 
