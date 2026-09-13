@@ -1,5 +1,7 @@
 ---
 import path from "node:path";
+import defaultThumbnail from "../../../public/images/default-thumbnail.png";
+import { publication } from "@/config/site";
 
 interface Props {
 	id?: string;
@@ -8,12 +10,15 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
+	loading?: "lazy" | "eager";
+	fetchpriority?: "high" | "low" | "auto";
+	sizes?: string;
 }
 
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
+const { id, src, alt, position = "center", basePath = "/", loading = "lazy", fetchpriority = "auto", sizes = "(min-width: 60rem) 50vw, 100vw" } = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -27,9 +32,9 @@ const isPublic = src.startsWith("/");
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
 // biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
-let img;
+let img = src === publication.defaultImage ? defaultThumbnail : undefined;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>("../../**", {
+	const files = import.meta.glob<ImageMetadata>("../../**/*.{jpg,jpeg,png,webp,avif,gif,svg}", {
 		import: "default",
 	});
 	let normalizedPath = path
@@ -41,14 +46,25 @@ if (isLocal) {
 			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
 		);
 	}
-	img = await file();
+	img = file ? await file() : defaultThumbnail;
 }
+
+// Resize only the trusted microCMS image CDN; other remote URLs stay intact.
+const remoteUrl = /^https:\/\/images\.microcms-assets\.io\//.test(src) ? new URL(src) : undefined;
+const remoteWidth = (width: number) => {
+	const resized = new URL(remoteUrl!);
+	resized.searchParams.set("w", String(width));
+	resized.searchParams.set("fit", "max");
+	resized.searchParams.set("auto", "compress,format");
+	return resized.href;
+};
+const remoteSrcset = remoteUrl ? [480, 800, 1200].map((width) => `${remoteWidth(width)} ${width}w`).join(", ") : undefined;
 
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle} widths={[480, 800, 1200]} sizes={sizes} format="webp" loading={loading} fetchpriority={fetchpriority} decoding="async" />}
+    {!img && <img src={remoteUrl ? remoteWidth(1200) : isPublic ? url(src) : src} srcset={remoteSrcset} sizes={remoteSrcset ? sizes : undefined} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority} decoding="async" />}
 </div>

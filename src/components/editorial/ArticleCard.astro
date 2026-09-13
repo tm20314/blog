@@ -1,6 +1,7 @@
 ---
 import path from "node:path";
 import ImageWrapper from "@components/misc/ImageWrapper.astro";
+import { publication } from "@/config/site";
 import type { ArticleEntry, PostForList } from "@utils/content-utils";
 import { formatDateToYYYYMMDD } from "@utils/date-utils";
 import { getCategoryUrl, getDir, getPostUrlBySlug } from "@utils/url-utils";
@@ -13,7 +14,7 @@ interface Props {
 const { post, variant = "standard" } = Astro.props;
 const category = post.data.category || "雑記";
 const postUrl = getPostUrlBySlug(post.slug);
-const coverImage = post.data.image?.trim() || "/images/default-thumbnail.png";
+const coverImage = post.data.image?.trim() || publication.defaultImage;
 ---
 
 <article class:list={["article-card", `article-card--${variant}`]}>
@@ -22,6 +23,7 @@ const coverImage = post.data.image?.trim() || "/images/default-thumbnail.png";
 		basePath={post.source === "local" ? path.join("content/posts/", getDir(post.id)) : "/"}
 		class="article-card__media"
 		alt=""
+		sizes={variant === "lead" ? "(min-width: 60rem) 60vw, 100vw" : "(min-width: 60rem) 30vw, (min-width: 40rem) 50vw, 100vw"}
 	/>
 	<div class="article-card__meta">
 		<a href={getCategoryUrl(category)}>{category}</a>

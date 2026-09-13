@@ -1,6 +1,7 @@
 ---
 import { url } from "@utils/url-utils";
 import { profileConfig } from "@/config";
+import { publication } from "@/config/site";
 
 const amazonAssociateTag =
 	import.meta.env.PUBLIC_AMAZON_ASSOCIATE_TAG?.trim() ?? "";
@@ -10,10 +11,9 @@ const hasAmazonAssociateTag = /^[A-Za-z0-9_-]+-\d{2}$/.test(amazonAssociateTag);
 <footer class="editorial-footer">
 	<p class="editorial-footer__statement">使って、作って、<br />ちゃんと残す。</p>
 	<div class="editorial-footer__meta">
-		<a class="editorial-footer__wordmark" href={url("/")}>つもログ</a>
+		<a class="editorial-footer__wordmark" href={url("/")}>{publication.name}</a>
 		<nav class="editorial-footer__links" aria-label="フッターナビゲーション">
-			<a href={url("/archive/")}>記事一覧</a>
-			<a href={url("/about/")}>プロフィール</a>
+			{publication.navigation.map((link) => <a href={url(link.href)}>{link.label}</a>)}
 			<a href={url("/privacy/")}>プライバシー</a>
 			<a href={url("/rss.xml")}>RSS</a>
 			{profileConfig.links.map((link) => (
@@ -22,9 +22,9 @@ const hasAmazonAssociateTag = /^[A-Za-z0-9_-]+-\d{2}$/.test(amazonAssociateTag);
 		</nav>
 		{hasAmazonAssociateTag && (
 			<p class="editorial-footer__disclosure">
-				Amazonのアソシエイトとして、つもログは適格販売により収入を得ています。
+				Amazonのアソシエイトとして、{publication.name}は適格販売により収入を得ています。
 			</p>
 		)}
-		<p class="editorial-footer__legal">© {new Date().getFullYear()} TumoTumo · Built independently in Japan.</p>
+		<p class="editorial-footer__legal">© {new Date().getFullYear()} {publication.author} · Built independently in Japan.</p>
 	</div>
 </footer>

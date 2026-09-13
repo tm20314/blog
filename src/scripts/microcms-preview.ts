@@ -1,6 +1,8 @@
 import { getSafeEmbed } from "@utils/embed-utils";
 import { filterCMSRichTextClasses } from "@utils/cms-rich-text";
 import type { MicroCMSArticle } from "@/types/editorial-blocks";
+import { publication } from "@/config/site";
+import { initEditorialTabs } from "./editor-tabs";
 
 type RawBlock = Record<string, unknown>;
 
@@ -50,6 +52,11 @@ function sanitizeRichText(html: unknown) {
 		asText(html),
 		"text/html",
 	);
+	for (const heading of documentFragment.body.querySelectorAll("h1")) {
+		const replacement = documentFragment.createElement("h2");
+		replacement.append(...heading.childNodes);
+		heading.replaceWith(replacement);
+	}
 	const allowedTags = new Set([
 		"A",
 		"BLOCKQUOTE",
@@ -510,28 +517,6 @@ function renderBlock(block: RawBlock) {
 	return null;
 }
 
-function wirePreviewTabs(root: HTMLElement) {
-	root.addEventListener("click", (event) => {
-		const button = (event.target as Element | null)?.closest<HTMLButtonElement>(
-			"[data-editor-tabs] [role='tab']",
-		);
-		if (!button) return;
-		const tabs = button.closest<HTMLElement>("[data-editor-tabs]");
-		if (!tabs) return;
-		for (const candidate of tabs.querySelectorAll<HTMLButtonElement>(
-			"[role='tab']",
-		)) {
-			const active = candidate === button;
-			candidate.setAttribute("aria-selected", String(active));
-			candidate.tabIndex = active ? 0 : -1;
-			const panel = tabs.querySelector<HTMLElement>(
-				`#${candidate.getAttribute("aria-controls")}`,
-			);
-			if (panel) panel.hidden = !active;
-		}
-	});
-}
-
 function formatDate(value: unknown) {
 	const date = new Date(asText(value));
 	if (Number.isNaN(date.getTime())) return "";
@@ -546,6 +531,9 @@ export async function initMicroCMSPreview() {
 	const root = document.querySelector<HTMLElement>("[data-preview-root]");
 	const status = document.querySelector<HTMLElement>("[data-preview-status]");
 	if (!root || !status) return;
+	const retry = document.querySelector<HTMLButtonElement>(
+		"[data-preview-retry]",
+	);
 
 	const params = new URLSearchParams(window.location.hash.replace(/^#/u, ""));
 	const contentId = params.get("contentId")?.trim() ?? "";
@@ -563,109 +551,141 @@ export async function initMicroCMSPreview() {
 		return;
 	}
 
-	try {
-		const response = await fetch("/api/preview", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ contentId, draftKey }),
-			cache: "no-store",
-			credentials: "same-origin",
-		});
-		const payload = (await response.json()) as MicroCMSArticle & {
-			error?: string;
-		};
-		if (!response.ok)
-			throw new Error(
-				payload.error || "記事プレビューを取得できませんでした。",
+	const loadPreview = async () => {
+		if (retry) retry.hidden = true;
+		status.hidden = false;
+		status.dataset.state = "loading";
+		status.textContent = "記事プレビューを読み込んでいます…";
+		root.setAttribute("aria-busy", "true");
+		try {
+			const response = await fetch("/api/preview", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ contentId, draftKey }),
+				cache: "no-store",
+				credentials: "same-origin",
+				signal: AbortSignal.timeout(20000),
+			});
+			const payload = (await response.json()) as MicroCMSArticle & {
+				error?: string;
+			};
+			if (!response.ok)
+				throw new Error(
+					payload.error || "記事プレビューを取得できませんでした。",
+				);
+
+			const title = asText(payload.title) || "無題の記事";
+			const description = asText(payload.description);
+			const categoryValue = payload.category;
+			const category =
+				typeof categoryValue === "string"
+					? categoryValue
+					: asText(asRecord(categoryValue).name) || "未分類";
+			const tags = [
+				...new Set(
+					[
+						...(Array.isArray(payload.tags) ? payload.tags.map(asText) : []),
+						...lines(payload.tagsText),
+					].filter(Boolean),
+				),
+			];
+
+			document.title = `${title}（プレビュー）| ${publication.name}`;
+			const titleNode = root.querySelector<HTMLElement>("[data-preview-title]");
+			const descriptionNode = root.querySelector<HTMLElement>(
+				"[data-preview-description]",
 			);
+			const categoryNode = root.querySelector<HTMLElement>(
+				"[data-preview-category]",
+			);
+			const factsNode = root.querySelector<HTMLElement>("[data-preview-facts]");
+			const tagsNode = root.querySelector<HTMLElement>("[data-preview-tags]");
+			const cover = root.querySelector<HTMLImageElement>(
+				"[data-preview-cover]",
+			);
+			const body = root.querySelector<HTMLElement>("[data-preview-body]");
+			if (
+				!titleNode ||
+				!descriptionNode ||
+				!categoryNode ||
+				!factsNode ||
+				!tagsNode ||
+				!cover ||
+				!body
+			)
+				return;
 
-		const title = asText(payload.title) || "無題の記事";
-		const description = asText(payload.description);
-		const categoryValue = payload.category;
-		const category =
-			typeof categoryValue === "string"
-				? categoryValue
-				: asText(asRecord(categoryValue).name) || "未分類";
-		const tags = [
-			...new Set(
-				[
-					...(Array.isArray(payload.tags) ? payload.tags.map(asText) : []),
-					...lines(payload.tagsText),
-				].filter(Boolean),
-			),
-		];
+			titleNode.textContent = title;
+			descriptionNode.textContent = description;
+			descriptionNode.hidden = !description;
+			categoryNode.textContent = category;
+			const published = formatDate(payload.publishedAt || payload.createdAt);
+			const updated = formatDate(payload.revisedAt || payload.updatedAt);
+			factsNode.replaceChildren();
+			if (published) factsNode.append(make("span", "", `公開 ${published}`));
+			if (updated) factsNode.append(make("span", "", `更新 ${updated}`));
+			factsNode.append(make("span", "preview-only-label", "下書きプレビュー"));
+			tagsNode.replaceChildren(
+				...tags.map((tag) => make("span", "", `#${tag}`)),
+			);
+			tagsNode.hidden = tags.length === 0;
 
-		document.title = `${title}（プレビュー）| つもログ`;
-		const titleNode = root.querySelector<HTMLElement>("[data-preview-title]");
-		const descriptionNode = root.querySelector<HTMLElement>(
-			"[data-preview-description]",
-		);
-		const categoryNode = root.querySelector<HTMLElement>(
-			"[data-preview-category]",
-		);
-		const factsNode = root.querySelector<HTMLElement>("[data-preview-facts]");
-		const tagsNode = root.querySelector<HTMLElement>("[data-preview-tags]");
-		const cover = root.querySelector<HTMLImageElement>("[data-preview-cover]");
-		const body = root.querySelector<HTMLElement>("[data-preview-body]");
-		if (
-			!titleNode ||
-			!descriptionNode ||
-			!categoryNode ||
-			!factsNode ||
-			!tagsNode ||
-			!cover ||
-			!body
-		)
-			return;
+			const eyecatch = asRecord(payload.eyecatch);
+			const coverValue = safeUrl(
+				eyecatch.url || asRecord(payload.cover).url,
+				true,
+			);
+			cover.src = coverValue || publication.defaultImage;
+			cover.alt = coverValue ? `${title}のアイキャッチ画像` : "";
 
-		titleNode.textContent = title;
-		descriptionNode.textContent = description;
-		descriptionNode.hidden = !description;
-		categoryNode.textContent = category;
-		const published = formatDate(payload.publishedAt || payload.createdAt);
-		const updated = formatDate(payload.revisedAt || payload.updatedAt);
-		factsNode.replaceChildren();
-		if (published) factsNode.append(make("span", "", `公開 ${published}`));
-		if (updated) factsNode.append(make("span", "", `更新 ${updated}`));
-		factsNode.append(make("span", "preview-only-label", "下書きプレビュー"));
-		tagsNode.replaceChildren(...tags.map((tag) => make("span", "", `#${tag}`)));
-		tagsNode.hidden = tags.length === 0;
+			body.replaceChildren();
+			const rawBlocks = (
+				Array.isArray(payload.blocks) ? payload.blocks : []
+			).map(asRecord);
+			const usesOrderedBody = rawBlocks.some(
+				(block) =>
+					asText(block.fieldId) === "richText" && Boolean(asText(block.body)),
+			);
+			if (asText(payload.content) && !usesOrderedBody) {
+				const content = make("div", "structured-article__rich-text");
+				content.innerHTML = sanitizeRichText(payload.content);
+				body.append(content);
+			}
+			for (const rawBlock of rawBlocks) {
+				const block = renderBlock(rawBlock);
+				if (block) body.append(block);
+			}
+			if (!body.textContent?.trim() && !body.querySelector("img")) {
+				body.append(
+					make("p", "preview-empty", "本文はまだ入力されていません。"),
+				);
+			}
+			initEditorialTabs(body);
 
-		const eyecatch = asRecord(payload.eyecatch);
-		const coverValue = safeUrl(
-			eyecatch.url || asRecord(payload.cover).url,
-			true,
-		);
-		cover.src = coverValue || "/images/default-thumbnail.png";
-		cover.alt = coverValue ? `${title}のアイキャッチ画像` : "";
-
-		body.replaceChildren();
-		const rawBlocks = (payload.blocks ?? []).map(asRecord);
-		const usesOrderedBody = rawBlocks.some(
-			(block) =>
-				asText(block.fieldId) === "richText" && Boolean(asText(block.body)),
-		);
-		if (asText(payload.content) && !usesOrderedBody) {
-			const content = make("div", "structured-article__rich-text");
-			content.innerHTML = sanitizeRichText(payload.content);
-			body.append(content);
+			status.hidden = true;
+			root.hidden = false;
+		} catch (error) {
+			status.textContent =
+				error instanceof Error &&
+				!(error instanceof SyntaxError) &&
+				!(error instanceof TypeError)
+					? error.message
+					: "記事プレビューを取得できませんでした。";
+			status.dataset.state = "error";
+			if (
+				error instanceof Error &&
+				["TimeoutError", "AbortError"].includes(error.name)
+			) {
+				status.textContent =
+					"記事の取得がタイムアウトしました。もう一度お試しください。";
+			}
+			if (retry) retry.hidden = false;
+		} finally {
+			root.setAttribute("aria-busy", "false");
 		}
-		for (const rawBlock of rawBlocks) {
-			const block = renderBlock(rawBlock);
-			if (block) body.append(block);
-		}
-		if (!body.textContent?.trim() && !body.querySelector("img")) {
-			body.append(make("p", "preview-empty", "本文はまだ入力されていません。"));
-		}
-		wirePreviewTabs(body);
-
-		status.hidden = true;
-		root.hidden = false;
-	} catch (error) {
-		status.textContent =
-			error instanceof Error
-				? error.message
-				: "記事プレビューを取得できませんでした。";
-		status.dataset.state = "error";
-	}
+	};
+	retry?.addEventListener("click", () => {
+		void loadPreview();
+	});
+	await loadPreview();
 }

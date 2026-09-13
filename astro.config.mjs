@@ -15,6 +15,7 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { expressiveCodeConfig } from "./src/config.ts";
+import { publication } from "./src/config/site.ts";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
@@ -56,7 +57,7 @@ function rehypeShiftDocumentHeadings() {
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://tumolog.com",
+	site: publication.origin,
 	base: "/",
 	trailingSlash: "always",
 	integrations: [
@@ -116,7 +117,9 @@ export default defineConfig({
 			},
 		}),
 		svelte(),
-		sitemap(),
+		sitemap({
+			filter: (page) => !/^\/(?:preview|\d+)\/?$/.test(new URL(page).pathname),
+		}),
 	],
 	markdown: {
 		remarkPlugins: [

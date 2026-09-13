@@ -4,6 +4,7 @@ import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 import {
 	getAllMicroCMSArticles,
+	hasMicroCMSConfiguration,
 	isMicroCMSConfigured,
 	normalizeMicroCMSArticle,
 } from "@/lib/microcms";
@@ -47,17 +48,34 @@ const splitTags = (value: string | undefined) =>
 		.filter(Boolean);
 
 async function getMicroCMSPosts(): Promise<ArticleEntry[]> {
-	if (!isMicroCMSConfigured) return [];
+	if (!isMicroCMSConfigured) {
+		if (hasMicroCMSConfiguration)
+			throw new Error(
+				"microCMSのサービス名とAPIキーの両方を設定してください。",
+			);
+		return [];
+	}
 
 	try {
 		const articles = await getAllMicroCMSArticles();
 		return articles.flatMap((article) => {
 			const normalized = normalizeMicroCMSArticle(article);
-			if (!normalized) return [];
+			if (!normalized)
+				throw new Error(
+					`microCMSの記事 ${article.id} に有効なslugを設定してください。`,
+				);
 			const published = new Date(
 				normalized.publishedAt ?? normalized.createdAt,
 			);
 			const updated = new Date(normalized.revisedAt ?? normalized.updatedAt);
+			if (
+				!Number.isFinite(published.getTime()) ||
+				!Number.isFinite(updated.getTime())
+			) {
+				throw new Error(
+					`microCMSの記事 ${article.id} の日付が正しくありません。`,
+				);
+			}
 			return [
 				{
 					source: "microcms" as const,
@@ -78,6 +96,7 @@ async function getMicroCMSPosts(): Promise<ArticleEntry[]> {
 			];
 		});
 	} catch (error) {
+		if (import.meta.env.PROD) throw error;
 		console.warn(
 			"microCMSの記事取得に失敗したため、ローカル記事のみで続行します。",
 			error instanceof Error ? error.message : "Unknown error",
@@ -87,7 +106,14 @@ async function getMicroCMSPosts(): Promise<ArticleEntry[]> {
 }
 
 // // Retrieve posts and sort them by publication date
-async function getRawSortedPosts() {
+let buildPosts: Promise<ArticleEntry[]> | undefined;
+function getRawSortedPosts() {
+	// Reuse one consistent snapshot across routes during a build; dev stays fresh.
+	if (!import.meta.env.PROD) return loadSortedPosts();
+	return (buildPosts ??= loadSortedPosts());
+}
+
+async function loadSortedPosts() {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});

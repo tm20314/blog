@@ -8,6 +8,38 @@ const env = {
 	MICROCMS_API_KEY: "test-read-key",
 };
 
+test("異なるサイトからのプレビュー取得を拒否する", async () => {
+	let called = false;
+	const response = await onRequestPost({
+		request: new Request("https://tumolog.com/api/preview", {
+			method: "POST",
+			headers: { Origin: "https://other.example" },
+			body: JSON.stringify({ contentId: "article", draftKey: "draft" }),
+		}),
+		env,
+		data: {
+			fetch: async () => {
+				called = true;
+			},
+		},
+	});
+	assert.equal(response.status, 403);
+	assert.equal(called, false);
+});
+
+test("見つからない下書きは404で返す", async () => {
+	const response = await onRequestPost({
+		request: new Request("https://tumolog.com/api/preview", {
+			method: "POST",
+			body: JSON.stringify({ contentId: "article", draftKey: "draft" }),
+		}),
+		env,
+		data: { fetch: async () => new Response("secret", { status: 404 }) },
+	});
+	assert.equal(response.status, 404);
+	assert.doesNotMatch(await response.text(), /secret/);
+});
+
 test("下書きキーをサーバー側からmicroCMSへ渡す", async () => {
 	let requestedUrl;
 	let requestedHeaders;

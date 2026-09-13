@@ -1,15 +1,16 @@
 ---
 import { url } from "@utils/url-utils";
+import { publication } from "@/config/site";
 ---
 
 <header class="masthead">
 	<a class="skip-link" href="#main-content">本文へ移動</a>
 	<div class="masthead__bar">
-		<a class="wordmark" href={url("/")} aria-label="つもログ ホーム">
-			<span class="wordmark__symbol" aria-hidden="true">つ</span>
+		<a class="wordmark" href={url("/")} aria-label={`${publication.name} ホーム`}>
+			<span class="wordmark__symbol" aria-hidden="true">{publication.symbol}</span>
 			<span class="wordmark__text">
-				<strong>つもログ</strong>
-				<small>Gadgets × Indie apps</small>
+				<strong>{publication.name}</strong>
+				<small>{publication.tagline}</small>
 			</span>
 		</a>
 		<a class="masthead__cta" href={url("/#journal")}>

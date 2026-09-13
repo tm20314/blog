@@ -6,9 +6,10 @@ import type {
 	SiteConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
+import { publication } from "./config/site";
 
 export const siteConfig: SiteConfig = {
-	title: "つもログ",
+	title: publication.name,
 	subtitle: "完全趣味、時々技術",
 	lang: "ja", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
@@ -50,7 +51,7 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/demo-avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "TumoTumo",
+	name: publication.author,
 	bio: "働いたら負け",
 	links: [
 		{

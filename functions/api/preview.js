@@ -1,3 +1,5 @@
+import { fetchMicroCMSJson } from "../../src/lib/microcms-request.mjs";
+
 const NO_STORE_HEADERS = {
 	"Cache-Control": "private, no-store, max-age=0",
 	Pragma: "no-cache",
@@ -17,6 +19,10 @@ function json(body, status = 200) {
 }
 
 export async function onRequestPost(context) {
+	const origin = context.request.headers.get("Origin");
+	if (origin && origin !== new URL(context.request.url).origin) {
+		return json({ error: "このページからはプレビューを取得できません。" }, 403);
+	}
 	let payload;
 	try {
 		payload = await context.request.json();
@@ -53,23 +59,21 @@ export async function onRequestPost(context) {
 
 	try {
 		const fetcher = context.data?.fetch ?? fetch;
-		const response = await fetcher(upstreamUrl, {
-			headers: { "X-MICROCMS-API-KEY": apiKey },
-		});
-		if (!response.ok) {
-			return json(
-				{
-					error:
-						response.status === 404
-							? "プレビューする記事が見つかりません。"
+		return json(
+			await fetchMicroCMSJson(upstreamUrl, apiKey, { fetcher, retries: 1 }),
+		);
+	} catch (error) {
+		const status = error?.status;
+		return json(
+			{
+				error:
+					status === 404
+						? "プレビューする記事が見つかりません。"
+						: status === 504
+							? "記事の取得がタイムアウトしました。もう一度お試しください。"
 							: "記事プレビューを取得できませんでした。",
-				},
-				response.status === 404 ? 404 : 502,
-			);
-		}
-
-		return json(await response.json());
-	} catch {
-		return json({ error: "記事プレビューを取得できませんでした。" }, 502);
+			},
+			status === 404 ? 404 : status === 504 ? 504 : 502,
+		);
 	}
 }

@@ -4,6 +4,7 @@ import type {
 	MicroCMSListResponse,
 	NormalizedMicroCMSArticle,
 } from "@/types/editorial-blocks";
+import { fetchMicroCMSJson } from "./microcms-request.mjs";
 
 const env = import.meta.env ?? {};
 const serviceDomain = env.MICROCMS_SERVICE_DOMAIN?.trim();
@@ -11,6 +12,7 @@ const apiKey = env.MICROCMS_API_KEY?.trim();
 const apiEndpoint = env.MICROCMS_API_ENDPOINT?.trim() || "blogs";
 
 export const isMicroCMSConfigured = Boolean(serviceDomain && apiKey);
+export const hasMicroCMSConfiguration = Boolean(serviceDomain || apiKey);
 
 function apiUrl(path = "", queries?: URLSearchParams) {
 	if (!serviceDomain || !/^[a-z0-9-]+$/u.test(serviceDomain)) {
@@ -30,13 +32,7 @@ async function request<T>(url: string): Promise<T> {
 		throw new Error("MICROCMS_API_KEY is not configured.");
 	}
 
-	const response = await fetch(url, {
-		headers: { "X-MICROCMS-API-KEY": apiKey },
-	});
-	if (!response.ok) {
-		throw new Error(`microCMS request failed (${response.status}).`);
-	}
-	return response.json() as Promise<T>;
+	return fetchMicroCMSJson(url, apiKey) as Promise<T>;
 }
 
 export async function getMicroCMSArticles(
@@ -51,7 +47,17 @@ export async function getMicroCMSArticles(
 	for (const [key, value] of Object.entries(options)) {
 		if (value !== undefined) queries.set(key, String(value));
 	}
-	return request(apiUrl("", queries));
+	const result = await request<MicroCMSListResponse<MicroCMSArticle>>(
+		apiUrl("", queries),
+	);
+	if (
+		!Array.isArray(result.contents) ||
+		!Number.isInteger(result.totalCount) ||
+		result.totalCount < 0
+	) {
+		throw new Error("microCMSの記事一覧の形式が正しくありません。");
+	}
+	return result;
 }
 
 export async function getAllMicroCMSArticles() {
@@ -71,9 +77,25 @@ export async function getAllMicroCMSArticles() {
 			offset,
 			orders: "-publishedAt",
 		});
+		if (
+			page.totalCount !== firstPage.totalCount ||
+			page.contents.length === 0
+		) {
+			throw new Error(
+				"microCMSの記事一覧が取得中に変わりました。再ビルドしてください。",
+			);
+		}
 		contents.push(...page.contents);
 	}
 
+	if (
+		contents.length !== firstPage.totalCount ||
+		new Set(contents.map((article) => article.id)).size !== contents.length
+	) {
+		throw new Error(
+			"microCMSの記事一覧に不足または重複があります。再ビルドしてください。",
+		);
+	}
 	return contents;
 }
 
@@ -256,9 +278,11 @@ export function normalizeMicroCMSArticle(
 	article: MicroCMSArticle,
 ): NormalizedMicroCMSArticle | null {
 	const slug = asString(article.slug).replace(/^\/+|\/+$/gu, "");
-	if (!slug) return null;
+	if (!slug || !/^[\p{L}\p{N}_-]+(?:\/[\p{L}\p{N}_-]+)*$/u.test(slug))
+		return null;
 
-	const blocks = (article.blocks ?? [])
+	const blocks = (Array.isArray(article.blocks) ? article.blocks : [])
+		.filter((block) => block && typeof block === "object")
 		.map(normalizeBlock)
 		.filter((block): block is EditorialBlock => block !== null);
 	const content = asString(article.content);

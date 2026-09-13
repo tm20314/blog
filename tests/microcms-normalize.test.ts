@@ -159,3 +159,24 @@ test("slugが空の記事は公開一覧へ渡さない", () => {
 		null,
 	);
 });
+
+test("slugのパス移動やクエリ混入を拒否し、日本語の階層は許可する", () => {
+	const article = {
+		id: "slug-test",
+		createdAt: "2026-09-14T00:00:00Z",
+		updatedAt: "2026-09-14T00:00:00Z",
+		title: "テスト",
+	};
+	for (const slug of [
+		"../secret",
+		"post?draft=1",
+		"post#section",
+		"%2e%2e/secret",
+	]) {
+		assert.equal(normalizeMicroCMSArticle({ ...article, slug }), null);
+	}
+	assert.equal(
+		normalizeMicroCMSArticle({ ...article, slug: "ガジェット/レビュー" })?.slug,
+		"ガジェット/レビュー",
+	);
+});

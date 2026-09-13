@@ -17,9 +17,11 @@ import EditorialLayout from "@layouts/EditorialLayout.astro";
 			<p>これは編集中の記事です。一般公開ページには反映されていません。</p>
 		</div>
 
-		<p class="preview-status" data-preview-status aria-live="polite">
+		<noscript><p class="preview-status">プレビューを表示するにはJavaScriptを有効にしてください。</p></noscript>
+		<p class="preview-status" data-preview-status role="status" aria-live="polite">
 			記事プレビューを読み込んでいます…
 		</p>
+		<button class="preview-retry" type="button" data-preview-retry hidden>もう一度読み込む</button>
 
 		<article class="article-document" data-preview-root hidden>
 			<header class="article-header">
@@ -96,6 +98,19 @@ import EditorialLayout from "@layouts/EditorialLayout.astro";
 		border-inline-start: var(--space-xs) solid var(--color-accent-ink);
 		text-align: start;
 	}
+
+	.preview-retry {
+		display: block;
+		margin: var(--space-lg) auto;
+		min-height: 44px;
+		padding: var(--space-sm) var(--space-lg);
+		border: var(--rule-hair) solid var(--color-ink);
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+		font: inherit;
+		cursor: pointer;
+	}
+	.preview-retry[hidden] { display: none; }
 
 	.preview-cover {
 		display: block;

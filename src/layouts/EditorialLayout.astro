@@ -5,7 +5,8 @@ import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans-jp";
 
-import bannerImage from "@assets/images/demo-banner.jpg";
+import { publication } from "@/config/site";
+import { serializeJsonLd } from "@/utils/structured-data";
 import EditorialFooter from "@components/editorial/EditorialFooter.astro";
 import SiteMasthead from "@components/editorial/SiteMasthead.astro";
 import GoogleServices from "@components/integrations/GoogleServices.astro";
@@ -28,7 +29,7 @@ interface Props {
 
 const {
 	title,
-	description = "PC・スマホ・バイク周辺のガジェットと、個人開発したアプリの記録を届けるブログ。",
+	description = publication.description,
 	image,
 	noindex = false,
 	robots,
@@ -45,22 +46,22 @@ const pageTitle = title
 	: `${siteConfig.title} — ガジェットと個人開発の記録`;
 const siteOrigin = Astro.site ?? Astro.url.origin;
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin);
-const ogImageUrl = new URL(image || bannerImage.src, siteOrigin);
+const ogImageUrl = new URL(image || publication.defaultImage, siteOrigin);
 const robotsContent = robots ?? (noindex ? "noindex, follow" : "");
 const websiteSchema = {
 	"@context": "https://schema.org",
 	"@graph": [
 		{
 			"@type": "WebSite",
-			"@id": `${siteOrigin}#website`,
+			"@id": new URL("/#website", siteOrigin).href,
 			name: siteConfig.title,
 			url: new URL(url("/"), siteOrigin).toString(),
-			description,
+			description: publication.description,
 			inLanguage: "ja-JP",
 		},
 		{
 			"@type": "Person",
-			"@id": `${siteOrigin}#author`,
+			"@id": new URL("/#author", siteOrigin).href,
 			name: profileConfig.name,
 			url: new URL(url("/about/"), siteOrigin).toString(),
 			sameAs: profileConfig.links.map((link) => link.url),
@@ -106,7 +107,7 @@ const websiteSchema = {
 		{ogType === "article" && tags.map((tag) => (
 			<meta property="article:tag" content={tag} />
 		))}
-		<script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+		<script is:inline type="application/ld+json" set:html={serializeJsonLd(websiteSchema)} />
 		{analytics && <GoogleServices />}
 		<slot name="head" />
 	</head>

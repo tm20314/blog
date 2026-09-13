@@ -2,6 +2,7 @@
 import { getSafeEmbed } from "@utils/embed-utils";
 import { CMS_RICH_TEXT_CLASSES } from "@utils/cms-rich-text";
 import sanitizeHtml from "sanitize-html";
+import { serializeJsonLd } from "@/utils/structured-data";
 import type { EditorialBlock } from "@/types/editorial-blocks";
 
 interface Props {
@@ -31,6 +32,11 @@ const cleanHtml = (html: string) =>
 		},
 		allowedSchemes: ["http", "https", "mailto"],
 		transformTags: {
+			h1: "h2",
+			img: (_tagName, attribs) => ({
+				tagName: "img",
+				attribs: { ...attribs, loading: "lazy", decoding: "async", alt: attribs.alt ?? "" },
+			}),
 			a: (_tagName, attribs) => ({
 				tagName: "a",
 				attribs: {
@@ -75,7 +81,7 @@ const faqSchema = faqItems.length
 ---
 
 {faqSchema && (
-	<script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+	<script is:inline type="application/ld+json" set:html={serializeJsonLd(faqSchema)} />
 )}
 
 <div class="custom-md editorial-prose structured-article" data-pagefind-body>
@@ -293,34 +299,6 @@ const faqSchema = faqItems.length
 </div>
 
 <script>
-	const activateTab = (button: HTMLButtonElement) => {
-		const tabs = button.closest<HTMLElement>("[data-editor-tabs]");
-		if (!tabs) return;
-		for (const candidate of tabs.querySelectorAll<HTMLButtonElement>("[role='tab']")) {
-			const active = candidate === button;
-			candidate.setAttribute("aria-selected", String(active));
-			candidate.tabIndex = active ? 0 : -1;
-			const panel = tabs.querySelector<HTMLElement>(`#${candidate.getAttribute("aria-controls")}`);
-			if (panel) panel.hidden = !active;
-		}
-	};
-
-	document.addEventListener("click", (event) => {
-		const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-editor-tabs] [role='tab']");
-		if (button) activateTab(button);
-	});
-
-	document.addEventListener("keydown", (event) => {
-		const button = (event.target as Element | null)?.closest<HTMLButtonElement>("[data-editor-tabs] [role='tab']");
-		if (!button || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-		const buttons = [...(button.closest("[data-editor-tabs]")?.querySelectorAll<HTMLButtonElement>("[role='tab']") ?? [])];
-		if (!buttons.length) return;
-		event.preventDefault();
-		const index = buttons.indexOf(button);
-		const next = event.key === "Home" ? buttons[0] : event.key === "End" ? buttons.at(-1) : buttons[(index + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length];
-		if (next) {
-			activateTab(next);
-			next.focus();
-		}
-	});
+	import { initEditorialTabs } from "@/scripts/editor-tabs";
+	initEditorialTabs();
 </script>
