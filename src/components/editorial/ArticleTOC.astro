@@ -1,0 +1,27 @@
+---
+import type { ArticleHeading } from "@utils/article-headings";
+
+interface Props {
+	headings: ArticleHeading[];
+}
+const { headings } = Astro.props;
+const first = Math.min(...headings.map((heading) => heading.depth));
+---
+<aside class="article-toc" aria-label="記事の目次">
+	<details class="article-toc__disclosure" open>
+		<summary>目次</summary>
+		<nav aria-label="記事の目次"><ol>{headings.map((heading) => <li class:list={[heading.depth > first && "article-toc__nested"]}><a href={`#${heading.slug}`} data-toc-link>{heading.text}</a></li>)}</ol></nav>
+	</details>
+</aside>
+<script>
+	const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"));
+	if (window.matchMedia("(max-width: 59.99rem)").matches) document.querySelector<HTMLDetailsElement>(".article-toc__disclosure")?.removeAttribute("open");
+	if ("IntersectionObserver" in window) {
+		const observer = new IntersectionObserver((entries) => {
+			const active = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+			if (!active) return;
+			for (const link of links) link.hash.slice(1) === encodeURI(active.target.id) || decodeURIComponent(link.hash.slice(1)) === active.target.id ? link.setAttribute("aria-current", "location") : link.removeAttribute("aria-current");
+		}, { rootMargin: "-10% 0px -65% 0px" });
+		for (const link of links) { const heading = document.getElementById(decodeURIComponent(link.hash.slice(1))); if (heading) observer.observe(heading); }
+	}
+</script>

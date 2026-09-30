@@ -48,6 +48,8 @@ const categoryName = (category: string | null | undefined) =>
 			<p>これまでの記事を新しい順に並べています。カテゴリやタグからも探せます。</p>
 		</header>
 
+		<details class="archive-filters-disclosure">
+			<summary>カテゴリ・タグで絞り込む</summary>
 		<section class="archive-filters" aria-labelledby="filter-heading">
 			<div class="archive-filters__heading">
 				<h2 id="filter-heading">絞り込む</h2>
@@ -57,7 +59,7 @@ const categoryName = (category: string | null | undefined) =>
 				<h3>カテゴリ</h3>
 				<nav aria-label="カテゴリで絞り込む">
 					{categories.map((category) => (
-						<a href={category.url}>{category.name}<span>{category.count}</span></a>
+						<a href={`${url("/archive/")}?category=${encodeURIComponent(category.name)}`} data-filter-category={category.name}>{category.name}<span>{category.count}</span></a>
 					))}
 				</nav>
 			</div>
@@ -65,11 +67,13 @@ const categoryName = (category: string | null | undefined) =>
 				<h3>タグ</h3>
 				<nav aria-label="タグで絞り込む">
 					{tags.map((tag) => (
-						<a href={getTagUrl(tag.name)}>#{tag.name}<span>{tag.count}</span></a>
+						<a href={getTagUrl(tag.name)} data-filter-tag={tag.name}>#{tag.name}<span>{tag.count}</span></a>
 					))}
 				</nav>
 			</div>
 		</section>
+		</details>
+		<nav class="archive-selection" data-archive-selection aria-label="選択中の絞り込み" hidden><span data-archive-selection-label></span><a href="/archive/">絞り込みを解除 ×</a></nav>
 
 		<section class="archive-index" aria-labelledby="archive-heading">
 			<header class="archive-index__heading">
@@ -114,11 +118,23 @@ const categoryName = (category: string | null | undefined) =>
 </EditorialLayout>
 
 <script>
+	import { normalizeCategory } from "@/config/categories";
+	const filters = document.querySelector<HTMLDetailsElement>(".archive-filters-disclosure");
+	if (filters && window.matchMedia("(min-width: 60rem)").matches) filters.open = true;
 	function filterArchive() {
 		const params = new URLSearchParams(window.location.search);
 		const selectedTags = params.getAll("tag");
-		const selectedCategories = params.getAll("category");
+		const selectedCategories = params.getAll("category").map(normalizeCategory);
 		const wantsUncategorized = params.has("uncategorized");
+		const labels = [...selectedCategories, ...selectedTags.map((tag) => `#${tag}`), ...(wantsUncategorized ? ["カテゴリなし"] : [])];
+		const selection = document.querySelector<HTMLElement>("[data-archive-selection]");
+		if (selection) selection.hidden = !labels.length;
+		const label = document.querySelector<HTMLElement>("[data-archive-selection-label]");
+		if (label) label.textContent = labels.join(" · ");
+		for (const chip of document.querySelectorAll<HTMLElement>("[data-filter-category], [data-filter-tag]")) {
+			const selected = selectedCategories.includes(chip.dataset.filterCategory || "") || selectedTags.includes(chip.dataset.filterTag || "");
+			selected ? chip.setAttribute("aria-current", "true") : chip.removeAttribute("aria-current");
+		}
 		const entries = Array.from(document.querySelectorAll<HTMLElement>("[data-archive-entry]"));
 		let visibleCount = 0;
 

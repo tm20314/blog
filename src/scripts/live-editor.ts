@@ -2,6 +2,7 @@ import { Editor, generateHTML, Mark, Node as TiptapNode } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
 import { TableKit } from "@tiptap/extension-table";
 import StarterKit from "@tiptap/starter-kit";
+import { annotateRichTextHeadings } from "../utils/article-headings";
 import { type CMSRawBlock, isLiveBody, type LiveBody } from "../utils/cms-body";
 import { filterCMSRichTextClasses } from "../utils/cms-rich-text";
 import { renderBlock, sanitizeRichText } from "./microcms-preview";
@@ -118,6 +119,7 @@ export function initLiveEditor() {
 				.map(renderBlock)
 				.filter((node): node is HTMLElement => Boolean(node)),
 		);
+		annotateRichTextHeadings(preview);
 	}
 	function send(data: LiveBody) {
 		if (!fieldId) return;

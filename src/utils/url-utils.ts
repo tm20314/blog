@@ -1,5 +1,6 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
+import { categoryPages, normalizeCategory } from "@/config/categories";
 
 export function pathsEqual(path1: string, path2: string) {
 	const normalizedPath1 = path1.replace(/^\/|\/$/g, "").toLowerCase();
@@ -22,13 +23,19 @@ export function getTagUrl(tag: string): string {
 }
 
 export function getCategoryUrl(category: string | null): string {
+	const normalizedCategory = normalizeCategory(category);
+	const page = categoryPages.find((page) => page.name === normalizedCategory);
+	if (page) return url(`/category/${page.slug}/`);
 	if (
-		!category ||
-		category.trim() === "" ||
-		category.trim().toLowerCase() === i18n(I18nKey.uncategorized).toLowerCase()
+		!normalizedCategory ||
+		normalizedCategory.trim() === "" ||
+		normalizedCategory.trim().toLowerCase() ===
+			i18n(I18nKey.uncategorized).toLowerCase()
 	)
 		return url("/archive/?uncategorized=true");
-	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
+	return url(
+		`/archive/?category=${encodeURIComponent(normalizedCategory.trim())}`,
+	);
 }
 
 export function getDir(path: string): string {

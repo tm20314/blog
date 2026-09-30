@@ -36,17 +36,27 @@ const hasGoogleServices = Boolean(gaMeasurementId || adsenseClientId);
 )}
 
 {gaMeasurementId && (
-	<>
-		<script
-			is:inline
-			async
-			src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`}
-		></script>
 		<script is:inline define:vars={{ gaMeasurementId }}>
-			gtag("js", new Date());
-			gtag("config", gaMeasurementId);
+			(() => {
+				let loaded = false;
+				window.tumoSetAnalyticsConsent = (allowed) => {
+					window[`ga-disable-${gaMeasurementId}`] = !allowed;
+					gtag("consent", "update", { analytics_storage: allowed ? "granted" : "denied" });
+					if (!allowed || loaded) return;
+					loaded = true;
+					const script = document.createElement("script");
+					script.async = true;
+					script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
+					document.head.append(script);
+					gtag("js", new Date());
+					gtag("config", gaMeasurementId);
+				};
+				try {
+					const saved = JSON.parse(localStorage.getItem("tumolog.analytics-consent.v1") || "null");
+					if (saved?.allowed === true && Number.isFinite(saved.expires) && saved.expires > Date.now()) window.tumoSetAnalyticsConsent(true);
+				} catch { /* Storage blocked: stay denied. */ }
+			})();
 		</script>
-	</>
 )}
 
 {adsenseClientId && (

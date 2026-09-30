@@ -1,4 +1,6 @@
 import { fetchMicroCMSJson } from "../../src/lib/microcms-request.mjs";
+import { createPreviewLimiter, readPreviewPayload } from "../lib/preview-limits.js";
+const allowRequest = createPreviewLimiter();
 
 const NO_STORE_HEADERS = {
 	"Cache-Control": "private, no-store, max-age=0",
@@ -23,10 +25,17 @@ export async function onRequestPost(context) {
 	if (origin && origin !== new URL(context.request.url).origin) {
 		return json({ error: "このページからはプレビューを取得できません。" }, 403);
 	}
+	const ip = context.request.headers.get("CF-Connecting-IP") || "unknown";
+	if (!(context.data?.allowRequest ?? allowRequest)(ip)) {
+		const response = json({ error: "アクセスが集中しています。1分後にお試しください。" }, 429);
+		response.headers.set("Retry-After", "60");
+		return response;
+	}
 	let payload;
 	try {
-		payload = await context.request.json();
-	} catch {
+		payload = await readPreviewPayload(context.request);
+	} catch (error) {
+		if (error instanceof RangeError) return json({ error: "リクエストが大きすぎます。" }, 413);
 		return json({ error: "プレビューURLが正しくありません。" }, 400);
 	}
 	const contentId =

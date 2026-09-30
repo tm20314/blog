@@ -2,6 +2,7 @@ import { filterCMSRichTextClasses } from "@utils/cms-rich-text";
 import { getSafeEmbed } from "@utils/embed-utils";
 import { publication } from "@/config/site";
 import type { MicroCMSArticle } from "@/types/editorial-blocks";
+import { updatePreviewTOC } from "../utils/article-headings";
 import { selectCMSBody } from "../utils/cms-body";
 import { initEditorialTabs } from "./editor-tabs";
 
@@ -100,6 +101,14 @@ export function sanitizeRichText(html: unknown) {
 		element.setAttribute("data-preview-src", element.getAttribute("src") ?? "");
 		element.setAttribute("data-preview-alt", element.getAttribute("alt") ?? "");
 		element.setAttribute(
+			"data-preview-width",
+			element.getAttribute("width") ?? "",
+		);
+		element.setAttribute(
+			"data-preview-height",
+			element.getAttribute("height") ?? "",
+		);
+		element.setAttribute(
 			"data-preview-colspan",
 			element.getAttribute("colspan") ?? "",
 		);
@@ -126,6 +135,8 @@ export function sanitizeRichText(html: unknown) {
 		const href = element.getAttribute("data-preview-href");
 		const src = element.getAttribute("data-preview-src");
 		const alt = element.getAttribute("data-preview-alt");
+		const width = element.getAttribute("data-preview-width");
+		const height = element.getAttribute("data-preview-height");
 		const colspan = element.getAttribute("data-preview-colspan");
 		const rowspan = element.getAttribute("data-preview-rowspan");
 		const classNames = filterCMSRichTextClasses(
@@ -151,6 +162,10 @@ export function sanitizeRichText(html: unknown) {
 			element.alt = alt ?? "";
 			element.loading = "lazy";
 			element.decoding = "async";
+			setImageDimensions(element, {
+				width: Number(width),
+				height: Number(height),
+			});
 		}
 		if (element instanceof HTMLTableCellElement) {
 			if (/^\d{1,2}$/u.test(colspan ?? "")) element.colSpan = Number(colspan);
@@ -161,6 +176,22 @@ export function sanitizeRichText(html: unknown) {
 	// Only allow-listed markup reaches the page.
 	for (const child of [...documentFragment.body.children]) finish(child);
 	return documentFragment.body.innerHTML;
+}
+
+function setImageDimensions(image: HTMLImageElement, raw: unknown) {
+	const dimensions = asRecord(raw);
+	for (const key of ["width", "height"] as const) {
+		const value = dimensions[key];
+		if (
+			typeof value === "number" &&
+			Number.isInteger(value) &&
+			value > 0 &&
+			value <= 40000
+		)
+			image[key] = value;
+	}
+	image.loading = "lazy";
+	image.decoding = "async";
 }
 
 function appendRich(parent: HTMLElement, html: unknown, className?: string) {
@@ -216,6 +247,7 @@ export function renderBlock(block: RawBlock) {
 			const image = make("img");
 			image.src = avatarUrl;
 			image.alt = "";
+			setImageDimensions(image, block.avatar);
 			avatar.append(image);
 		} else avatar.append(make("span", "editor-speech__symbol", "つ"));
 		person.append(
@@ -335,6 +367,7 @@ export function renderBlock(block: RawBlock) {
 			image.src = imageUrl;
 			image.alt = asText(asRecord(block.image).alt);
 			image.loading = "lazy";
+			setImageDimensions(image, block.image);
 			media.append(image);
 			node.append(media);
 		}
@@ -398,6 +431,7 @@ export function renderBlock(block: RawBlock) {
 			image.src = imageUrl;
 			image.alt = "";
 			image.loading = "lazy";
+			setImageDimensions(image, block.image);
 			thumbnail.append(image);
 			link.append(thumbnail);
 		} else
@@ -464,6 +498,7 @@ export function renderBlock(block: RawBlock) {
 		image.src = imageUrl;
 		image.alt = asText(block.alt);
 		image.loading = "lazy";
+		setImageDimensions(image, block.image);
 		node.append(image);
 		if (asText(block.caption))
 			node.append(make("figcaption", "", asText(block.caption)));
@@ -651,6 +686,7 @@ export async function initMicroCMSPreview() {
 				);
 			}
 			initEditorialTabs(body);
+			updatePreviewTOC(body);
 
 			status.hidden = true;
 			root.hidden = false;

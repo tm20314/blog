@@ -2,6 +2,7 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
+import { normalizeCategory } from "@/config/categories";
 import {
 	getAllMicroCMSArticles,
 	hasMicroCMSConfiguration,
@@ -88,7 +89,7 @@ async function getMicroCMSPosts(): Promise<ArticleEntry[]> {
 						description: normalized.description?.trim() ?? "",
 						image: (normalized.eyecatch ?? normalized.cover)?.url ?? "",
 						tags: normalized.tags ?? splitTags(normalized.tagsText),
-						category: normalized.category,
+						category: normalizeCategory(normalized.category),
 						lang: "ja",
 					},
 					cmsArticle: normalized,
@@ -121,7 +122,7 @@ async function loadSortedPosts() {
 	const localPosts: ArticleEntry[] = allBlogPosts.map((entry) => ({
 		source: "local",
 		id: entry.id,
-		slug: entry.slug,
+		slug: entry.id,
 		data: {
 			title: entry.data.title,
 			published: entry.data.published,
@@ -129,7 +130,7 @@ async function loadSortedPosts() {
 			description: entry.data.description,
 			image: entry.data.image,
 			tags: entry.data.tags,
-			category: entry.data.category,
+			category: normalizeCategory(entry.data.category),
 			lang: entry.data.lang,
 		},
 		localEntry: entry,

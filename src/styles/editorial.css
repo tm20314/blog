@@ -414,8 +414,8 @@ a {
   margin-block-start: var(--space-3xl);
 }
 
-.ad-placement:has(.adsbygoogle[data-ad-status="unfilled"]) {
-  display: none;
+.ad-placement .adsbygoogle {
+  min-height: 250px;
 }
 
 .article-card {

@@ -1,0 +1,12 @@
+---
+import EditorialLayout from "@layouts/EditorialLayout.astro";
+---
+<EditorialLayout title="ページが見つかりません" noindex analytics={false}>
+	<main id="main-content" class="content-page">
+		<header class="page-intro">
+			<div class="page-intro__title"><p class="page-intro__index">404 / Not found</p><h1>ページが見つかりません。</h1></div>
+			<p>URLが変更されたか、ページが削除された可能性があります。</p>
+		</header>
+		<nav class="intro-actions" aria-label="記事を探す"><a class="text-link" href="/archive/">記事一覧へ →</a><a class="text-link" href="/search/">サイト内検索 →</a></nav>
+	</main>
+</EditorialLayout>

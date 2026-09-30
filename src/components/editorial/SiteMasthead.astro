@@ -1,6 +1,11 @@
 ---
 import { url } from "@utils/url-utils";
 import { publication } from "@/config/site";
+
+const active = (href: string) =>
+	!href.includes("#") &&
+	(Astro.url.pathname === href ||
+		(href === "/archive/" && Astro.url.pathname.startsWith("/category/")));
 ---
 
 <header class="masthead">
@@ -13,6 +18,15 @@ import { publication } from "@/config/site";
 				<small>{publication.tagline}</small>
 			</span>
 		</a>
+		<nav class="masthead__navigation" aria-label="メインナビゲーション">
+			{publication.navigation.map((link) => <a href={url(link.href)} aria-current={active(link.href) ? "page" : undefined}>{link.label}</a>)}
+		</nav>
+		<details class="masthead__menu">
+			<summary>メニュー</summary>
+			<nav aria-label="モバイルナビゲーション">
+				{publication.navigation.map((link) => <a href={url(link.href)} aria-current={active(link.href) ? "page" : undefined}>{link.label}</a>)}
+			</nav>
+		</details>
 		<a class="masthead__cta" href={url("/#journal")}>
 			ブログを読む <span aria-hidden="true">↘</span>
 		</a>

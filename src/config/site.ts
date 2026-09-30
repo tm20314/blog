@@ -12,8 +12,11 @@ export const publication = {
 		{ label: "記事一覧", href: "/archive/" },
 		{ label: "つくったアプリ", href: "/#works" },
 		{ label: "プロフィール", href: "/about/" },
+		{ label: "検索", href: "/search/" },
 	],
 	ads: {
+		inlineMinCharacters: 1200,
+		endMinCharacters: 300,
 		feed: { slot: "7990861532", layoutKey: "-6t+ed+2i-1n-4w" },
 		inline: { slot: "5889839621" },
 		end: { slot: "7258761611" },

@@ -1,9 +1,18 @@
-import type { AstroIntegration } from "@swup/astro";
+export {};
 
 declare global {
 	interface Window {
-		// type from '@swup/astro' is incorrect
-		swup: AstroIntegration;
+		// Legacy template type only; public pages use ordinary document navigation.
+		swup: {
+			hooks: {
+				on: (
+					event: string,
+					callback: (visit: { to: { url: string } }) => void,
+					options?: { before?: boolean },
+				) => void;
+			};
+			navigate: (url: string) => void;
+		};
 		pagefind: {
 			search: (query: string) => Promise<{
 				results: Array<{

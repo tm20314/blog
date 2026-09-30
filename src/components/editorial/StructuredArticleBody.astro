@@ -1,4 +1,5 @@
 ---
+import { prepareCMSHeadings } from "@utils/cms-headings";
 import { CMS_RICH_TEXT_CLASSES } from "@utils/cms-rich-text";
 import { getSafeEmbed } from "@utils/embed-utils";
 import sanitizeHtml from "sanitize-html";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const { blocks } = Astro.props;
+const { htmlByBlock } = prepareCMSHeadings(blocks);
 const allowedTags = [
 	...sanitizeHtml.defaults.allowedTags,
 	"figure",
@@ -24,6 +26,9 @@ const cleanHtml = (html: string) =>
 		allowedTags,
 		allowedAttributes: {
 			"*": ["class"],
+			h2: ["id", "class"],
+			h3: ["id", "class"],
+			h4: ["id", "class"],
 			a: ["href", "target", "rel", "class"],
 			img: ["src", "alt", "width", "height", "loading", "decoding"],
 		},
@@ -93,7 +98,7 @@ const faqSchema = faqItems.length
 	{blocks.map((block, blockIndex) => (
 		<>
 			{block.fieldId === "richText" && (
-				<div class="structured-article__rich-text" set:html={cleanHtml(block.body)} />
+				<div class="structured-article__rich-text" set:html={cleanHtml(htmlByBlock.get(blockIndex) ?? block.body)} />
 			)}
 
 			{block.fieldId === "box" && (
@@ -117,7 +122,7 @@ const faqSchema = faqItems.length
 					<div class="editor-speech__person">
 						<span class="editor-speech__avatar" aria-hidden="true">
 						{block.avatar && safeMediaUrl(block.avatar.url)
-							? <img src={safeMediaUrl(block.avatar.url)} alt="" loading="lazy" decoding="async" />
+							? <img src={safeMediaUrl(block.avatar.url)} width={block.avatar.width} height={block.avatar.height} alt="" loading="lazy" decoding="async" />
 								: <span class="editor-speech__symbol">つ</span>}
 						</span>
 						<span class="editor-speech__name">{block.name ?? "つもつも"}</span>
@@ -190,7 +195,7 @@ const faqSchema = faqItems.length
 				<aside class="editor-block editor-product">
 					{block.image && safeMediaUrl(block.image.url) && (
 						<figure class="editor-product__media">
-							<img src={safeMediaUrl(block.image.url)} alt={block.image.alt ?? ""} loading="lazy" decoding="async" />
+							<img src={safeMediaUrl(block.image.url)} width={block.image.width} height={block.image.height} alt={block.image.alt ?? ""} loading="lazy" decoding="async" />
 						</figure>
 					)}
 					<div class="editor-product__body">
@@ -214,7 +219,7 @@ const faqSchema = faqItems.length
 					<a class="no-styling smart-link-card__link" href={safeUrl(block.url)} target="_blank" rel="noopener noreferrer">
 						{block.image && safeMediaUrl(block.image.url) ? (
 							<span class="smart-link-card__thumbnail" aria-hidden="true">
-								<img src={safeMediaUrl(block.image.url)} alt="" loading="lazy" decoding="async" />
+								<img src={safeMediaUrl(block.image.url)} width={block.image.width} height={block.image.height} alt="" loading="lazy" decoding="async" />
 							</span>
 						) : (
 							<span class="smart-link-card__mark" aria-hidden="true">{getHostname(block.url).charAt(0)}</span>
@@ -255,7 +260,7 @@ const faqSchema = faqItems.length
 					{block.style === "browser" && (
 						<div class="editor-image-panel__chrome" aria-hidden="true"><span></span><span></span><span></span></div>
 					)}
-					<img src={safeMediaUrl(block.image.url)} alt={block.alt ?? ""} loading="lazy" decoding="async" />
+					<img src={safeMediaUrl(block.image.url)} width={block.image.width} height={block.image.height} alt={block.alt ?? ""} loading="lazy" decoding="async" />
 					{block.caption && <figcaption>{block.caption}</figcaption>}
 				</figure>
 			)}

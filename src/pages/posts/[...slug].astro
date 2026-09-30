@@ -1,5 +1,7 @@
 ---
+import { render } from "astro:content";
 import path from "node:path";
+import ArticleTOC from "@components/editorial/ArticleTOC.astro";
 import RelatedPosts from "@components/editorial/RelatedPosts.astro";
 import ShareLinks from "@components/editorial/ShareLinks.astro";
 import StructuredArticleBody from "@components/editorial/StructuredArticleBody.astro";
@@ -7,8 +9,16 @@ import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import EditorialLayout from "@layouts/EditorialLayout.astro";
+import {
+	articleDescription,
+	blocksText,
+	markdownText,
+	socialImageUrl,
+} from "@utils/article-metadata";
+import { prepareCMSHeadings } from "@utils/cms-headings";
 import { type ArticleEntry, getSortedPosts } from "@utils/content-utils";
 import { selectRelatedPosts } from "@utils/related-posts";
+import { representativeImage } from "@utils/representative-image";
 import {
 	getCategoryUrl,
 	getDir,
@@ -16,6 +26,10 @@ import {
 	getTagUrl,
 	url,
 } from "@utils/url-utils";
+import {
+	isTrustedArticleImage,
+	readTrustedImage,
+} from "@/lib/remote-image-size.mjs";
 import "katex/dist/katex.css";
 import { licenseConfig, profileConfig, siteConfig } from "@/config";
 import { publication } from "@/config/site";
@@ -34,41 +48,55 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props as { entry: ArticleEntry };
 const localRender =
-	entry.source === "local" ? await entry.localEntry.render() : null;
+	entry.source === "local" ? await render(entry.localEntry) : null;
 const Content = localRender?.Content;
-const headings = localRender?.headings ?? [];
+const headings =
+	entry.source === "microcms"
+		? prepareCMSHeadings(entry.cmsArticle.blocks).headings
+		: (localRender?.headings ?? []);
 const remarkPluginFrontmatter = localRender?.remarkPluginFrontmatter ?? {};
 const language = entry.data.lang || siteConfig.lang;
-const description = entry.data.description || entry.data.title;
+const articleText =
+	entry.source === "microcms"
+		? blocksText(entry.cmsArticle.blocks)
+		: markdownText(entry.localEntry.body ?? "");
+const description = articleDescription(
+	articleText,
+	entry.data.title,
+	entry.data.description,
+);
 const category = entry.data.category?.trim() || i18n(I18nKey.uncategorized);
 const coverImage = entry.data.image?.trim() || publication.defaultImage;
-const socialImage =
-	coverImage.startsWith("/") || coverImage.startsWith("http")
-		? coverImage.startsWith("/")
-			? url(coverImage)
-			: coverImage
-		: url(publication.defaultImage);
+const representative = representativeImage(entry);
+const trustedRepresentative = isTrustedArticleImage(representative);
+const optimizedImageAvailable =
+	trustedRepresentative && Boolean(await readTrustedImage(representative));
+const socialFallback =
+	trustedRepresentative && !optimizedImageAvailable
+		? publication.defaultImage
+		: coverImage;
+const socialImage = optimizedImageAvailable
+	? `/og/${entry.slug}.jpg`
+	: socialImageUrl(
+			socialFallback.startsWith("/") || socialFallback.startsWith("http")
+				? socialFallback.startsWith("/")
+					? url(socialFallback)
+					: socialFallback
+				: url(publication.defaultImage),
+		);
 const canonicalUrl = new URL(
 	getPostUrlBySlug(entry.slug),
 	Astro.site ?? Astro.url.origin,
 ).toString();
 const relatedPosts = selectRelatedPosts(entry, await getSortedPosts(), 3);
+const adsAllowed = !/privacy-policy/u.test(entry.slug);
 const headingDepths = headings.map((heading) => heading.depth);
 const firstHeadingDepth =
 	headingDepths.length > 0 ? Math.min(...headingDepths) : 1;
 const tocHeadings = headings.filter(
 	(heading) => heading.depth < firstHeadingDepth + siteConfig.toc.depth,
 );
-const cmsText =
-	entry.source === "microcms"
-		? entry.cmsArticle.blocks
-				.map((block) => JSON.stringify(block))
-				.join(" ")
-				.replace(/<[^>]*>/gu, " ")
-				.replace(/[{}[\]"_:,]/gu, " ")
-				.replace(/\s+/gu, " ")
-				.trim()
-		: "";
+const cmsText = entry.source === "microcms" ? articleText : "";
 const wordCount =
 	entry.source === "microcms"
 		? cmsText.length
@@ -96,7 +124,14 @@ const jsonLd = {
 		name: profileConfig.name,
 	},
 	datePublished: entry.data.published.toISOString(),
-	image: new URL(socialImage, Astro.site ?? Astro.url.origin).toString(),
+	...(representative && (!trustedRepresentative || optimizedImageAvailable)
+		? {
+				image: new URL(
+					optimizedImageAvailable ? socialImage : representative,
+					Astro.site ?? Astro.url.origin,
+				).toString(),
+			}
+		: {}),
 	...(entry.data.updated
 		? { dateModified: entry.data.updated.toISOString() }
 		: {}),
@@ -196,16 +231,16 @@ const breadcrumbSchema = {
 						<StructuredArticleBody blocks={entry.cmsArticle.blocks} />
 					) : null}
 
-					<AdSlot
+					{adsAllowed && articleText.length >= publication.ads.inlineMinCharacters && <AdSlot
 						slot={publication.ads.inline.slot}
 						placement="inline"
 						format="fluid"
 						layout="in-article"
-						afterParagraph={2}
-						minParagraphs={4}
-					/>
+						afterParagraph={4}
+						minParagraphs={8}
+					/>}
 
-					<AdSlot slot={publication.ads.end.slot} placement="end" />
+					{adsAllowed && articleText.length >= publication.ads.endMinCharacters && <AdSlot slot={publication.ads.end.slot} placement="end" />}
 
 					<ShareLinks title={entry.data.title} url={canonicalUrl} />
 
@@ -233,18 +268,7 @@ const breadcrumbSchema = {
 				</div>
 
 				{siteConfig.toc.enable && tocHeadings.length > 0 && (
-					<aside class="article-toc" aria-labelledby="toc-heading">
-						<h2 id="toc-heading">目次</h2>
-						<nav aria-label="記事の目次">
-							<ol>
-								{tocHeadings.map((heading) => (
-									<li class:list={[heading.depth > firstHeadingDepth && "article-toc__nested"]}>
-										<a href={`#${heading.slug}`}>{heading.text}</a>
-									</li>
-								))}
-							</ol>
-						</nav>
-					</aside>
+					<ArticleTOC headings={tocHeadings} />
 				)}
 			</div>
 		</article>

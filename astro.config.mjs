@@ -1,6 +1,5 @@
-import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
-import tailwind from "@astrojs/tailwind";
+import { unified } from "@astrojs/markdown-remark";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { defineConfig } from "astro/config";
@@ -35,6 +34,7 @@ import {
 } from "./src/plugins/rehype-component-editorial-blocks.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { rehypeSmartEmbeds } from "./src/plugins/rehype-smart-embeds.mjs";
+import { rehypeArticleImages } from "./src/plugins/rehype-article-images.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
@@ -61,9 +61,6 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	integrations: [
-		tailwind({
-			nesting: true,
-		}),
 		icon({
 			include: {
 				"preprocess: vitePreprocess(),": ["*"],
@@ -117,11 +114,8 @@ export default defineConfig({
 			},
 		}),
 		svelte(),
-		sitemap({
-			filter: (page) => !/^\/(?:preview|editor|\d+)\/?$/.test(new URL(page).pathname),
-		}),
 	],
-	markdown: {
+	markdown: { processor: unified({
 		remarkPlugins: [
 			remarkMath,
 			remarkReadingTime,
@@ -184,10 +178,12 @@ export default defineConfig({
 				},
 			],
 			rehypeSmartEmbeds,
+			rehypeArticleImages,
 		],
-	},
+	}) },
 	vite: {
 		build: {
+			cssMinify: "esbuild",
 			rollupOptions: {
 				onwarn(warning, warn) {
 					// temporarily suppress this warning

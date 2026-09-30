@@ -37,10 +37,11 @@ import EditorialLayout from "@layouts/EditorialLayout.astro";
 			</header>
 
 			<figure class="article-cover preview-cover">
-				<img data-preview-cover src="/images/default-thumbnail.png" alt="" />
+				<img data-preview-cover src="/images/default-thumbnail.png" width="1200" height="630" alt="" />
 			</figure>
 
 			<div class="article-layout preview-layout">
+				<aside class="article-toc" data-preview-toc hidden><details><summary>目次</summary><nav aria-label="記事プレビューの目次"><ol></ol></nav></details></aside>
 				<div class="article-reading">
 					<div class="custom-md editorial-prose structured-article" data-preview-body></div>
 				</div>

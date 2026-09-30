@@ -1,0 +1,42 @@
+---
+import ArticleCard from "@components/editorial/ArticleCard.astro";
+import EditorialLayout from "@layouts/EditorialLayout.astro";
+import { getSortedPostsList } from "@utils/content-utils";
+import { serializeJsonLd } from "@utils/structured-data";
+import { getPostUrlBySlug } from "@utils/url-utils";
+import { categoryPages } from "@/config/categories";
+export function getStaticPaths() {
+	return categoryPages.map((category) => ({
+		params: { slug: category.slug },
+		props: { category },
+	}));
+}
+const { category } = Astro.props;
+const posts = (await getSortedPostsList()).filter(
+	(post) => post.data.category === category.name,
+);
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "CollectionPage",
+	name: `${category.name}の記事`,
+	description: category.description,
+	url: new URL(Astro.url.pathname, Astro.site).href,
+	mainEntity: {
+		"@type": "ItemList",
+		itemListElement: posts.map((post, index) => ({
+			"@type": "ListItem",
+			position: index + 1,
+			name: post.data.title,
+			url: new URL(getPostUrlBySlug(post.slug), Astro.site).href,
+		})),
+	},
+};
+---
+<EditorialLayout title={`${category.name}の記事`} description={category.description}>
+	<script slot="head" is:inline type="application/ld+json" set:html={serializeJsonLd(schema)} />
+	<main id="main-content" class="content-page">
+		<nav class="breadcrumb" aria-label="パンくずリスト"><a href="/">つもログ</a><span aria-hidden="true">/</span><a href="/archive/">記事一覧</a><span aria-hidden="true">/</span><span aria-current="page">{category.name}</span></nav>
+		<header class="page-intro"><div class="page-intro__title"><p class="page-intro__index">Category / {posts.length} stories</p><h1>{category.name}の記事</h1></div><p>{category.description}</p></header>
+		<div class="article-index">{posts.map((post) => <ArticleCard post={post} />)}</div>
+	</main>
+</EditorialLayout>

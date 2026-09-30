@@ -1,0 +1,17 @@
+---
+const gaEnabled = /^G-[A-Z0-9]+$/iu.test(
+	import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim() || "",
+);
+---
+{gaEnabled && <details class="consent-settings" data-consent-settings>
+	<summary>アクセス解析・広告の設定</summary>
+	<p>サイト改善のためのGoogle Analyticsによる計測を許可しますか？許可するまで解析タグは読み込みません。選択はこのブラウザーに6か月保存され、ここから変更できます。</p>
+	<div class="consent-controls"><button type="button" data-analytics-deny>解析を許可しない</button><button type="button" data-analytics-allow>解析を許可する</button></div>
+	<p data-consent-status role="status"></p>
+	<p>広告の同意は解析とは別です。対象地域ではGoogleの同意画面をご利用ください。<button type="button" data-ad-privacy-settings>広告の同意設定を開く</button></p>
+	<p><a href="/privacy/">プライバシーポリシー</a> · <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Googleによるデータの利用</a></p>
+</details>}
+<script>
+	import { initConsentSettings } from "@/scripts/consent-settings";
+	initConsentSettings();
+</script>

@@ -54,9 +54,18 @@ const elementId = `adsense-${placement}-${adSlot}`;
 				if (afterParagraph > 0) {
 					const article = document.querySelector(".editorial-prose");
 					const paragraphs = Array.from(article?.querySelectorAll("p") ?? []).filter(
-						(paragraph) => !paragraph.closest("blockquote, figure, aside, li, .smart-link-card, .media-embed"),
+						(paragraph) => !paragraph.closest("blockquote, figure, aside, li, .smart-link-card, .media-embed, .editor-block, .cms-product, .editor-product, table, details"),
 					);
-					const target = paragraphs[afterParagraph - 1];
+					const totalCharacters = paragraphs.reduce((sum, paragraph) => sum + (paragraph.textContent?.trim().length || 0), 0);
+					let characters = 0;
+					const target = paragraphs.find((paragraph, index) => {
+						characters += paragraph.textContent?.trim().length || 0;
+						const block = paragraph.closest(".structured-article__rich-text") || paragraph;
+						const next = paragraph.nextElementSibling || block.nextElementSibling;
+						const previous = paragraph.previousElementSibling || block.previousElementSibling;
+						const nearProduct = next?.matches(".editor-product, .smart-link-card--amazon") || previous?.matches(".editor-product, .smart-link-card--amazon");
+						return index >= afterParagraph - 1 && index < paragraphs.length - 2 && characters >= Math.max(600, totalCharacters * .35) && !nearProduct;
+					});
 
 					if (paragraphs.length < minParagraphs || !target) {
 						container.remove();
